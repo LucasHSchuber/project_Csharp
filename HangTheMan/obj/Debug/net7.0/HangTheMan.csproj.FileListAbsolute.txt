@@ -12,3 +12,6 @@
 /Users/lucash.schuber/Desktop/C#/Projekt/HangTheMan/obj/Debug/net7.0/HangTheMan.pdb
 /Users/lucash.schuber/Desktop/C#/Projekt/HangTheMan/obj/Debug/net7.0/HangTheMan.genruntimeconfig.cache
 /Users/lucash.schuber/Desktop/C#/Projekt/HangTheMan/obj/Debug/net7.0/ref/HangTheMan.dll
+/Users/lucash.schuber/Desktop/C#/Projekt/HangTheMan/bin/Debug/net7.0/Newtonsoft.Json.dll
+/Users/lucash.schuber/Desktop/C#/Projekt/HangTheMan/obj/Debug/net7.0/HangTheMan.csproj.AssemblyReference.cache
+/Users/lucash.schuber/Desktop/C#/Projekt/HangTheMan/obj/Debug/net7.0/HangTheMan.csproj.CopyComplete

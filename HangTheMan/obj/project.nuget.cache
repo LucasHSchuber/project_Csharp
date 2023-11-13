@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "zTls060Uf6yz3v1QXLjRYs5TymJplZOQZ/FP/jLCpf486425LWfbZgoMD4PdP7H/famAxCdj7OO5XJBvENNwZg==",
+  "dgSpecHash": "eQa8NFXY2b2fJg+vfkDkVu2M9AKAt1NPycb5cYTudHwSU37smq3nDEOk9AZNjBmdj8Ga1vIxiurpPiyKBdIUxA==",
   "success": true,
   "projectFilePath": "/Users/lucash.schuber/Desktop/C#/Projekt/HangTheMan/HangTheMan.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/lucash.schuber/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }
