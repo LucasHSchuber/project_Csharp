@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
+// using System.Text.Json;
+
 
 namespace HM
 {
@@ -12,71 +14,92 @@ namespace HM
     {
 
         public static List<wordBank> words = new List<wordBank>();
-
+        public static List<User> users = new List<User>();
         static List<string> guessesLetter = new List<string>(); // Move the list declaration outside the method
-        const string FilePath = "json/hangmanwordbank.json"; //filename for storing words
+        const string FilePathWord = "json/hangmanwordbank.json"; //filename for storing words
+        const string FilePathUsers = "json/users.json"; //filename for storing users
+
 
 
         static void Main(string[] args)
         {
 
-            Console.Clear();
-            Console.WriteLine($"--------------");
-            Console.WriteLine($"WELCOME!");
-            Console.WriteLine($"");
-            Console.WriteLine($"1. Play Hangman");
-            Console.WriteLine($"2. Add new word!");
-            Console.WriteLine($"");
-            Console.WriteLine($"--------------");
+            bool exit = false;
 
-            Console.Write("Request: ");
-            string? choice = Console.ReadLine();
-
-            switch (choice)
+            do
             {
-                case "1":
-                    PlayHangman();
-                    break;
-
-                case "2":
-                    AddWord();
-                    break;
-
-                default:
-                    Console.WriteLine("Invalid choice. Exiting.");
-                    break;
-            }
-
-
-
-
-
-
-            static void PlayHangman()
-            {
-
-
-                string? user = AddUser();
-                Console.WriteLine($"Hi {user}");
-                int bet = Bets();
-
-                //START APP WITH CLEAR 
                 Console.Clear();
-                // string theWord = "hangman"; 
+                Console.WriteLine($"--------------");
+                Console.WriteLine($"WELCOME!");
+                Console.WriteLine($"");
+                Console.WriteLine($"1. Play Hangman");
+                Console.WriteLine($"2. Add new word");
+                Console.WriteLine($"3. Players");
+                Console.WriteLine($"4. Exit");
+                Console.WriteLine($"");
+                Console.WriteLine($"--------------");
+
+                Console.Write("Request: ");
+                string? choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        DisplayAllUsers();
+                        break;
+
+                    case "2":
+                        AddWord();
+                        break;
+                    case "3":
+                        ViewPlayers();
+                        break;
+
+                    case "4":
+                        exit = true;
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice. Exiting.");
+                        break;
+                }
+            } while (!exit);
+
+
+
+
+
+
+            static void PlayHangman(string userName, int userLives, int userMoney)
+            {
+
+
+                // int bet = Bets();
+                int bet = 0;
+
+                //START APP WITH CONSOLE CLEAR 
+                Console.Clear();
+                //Load word 
                 string theWord = LoadHangmanWord().ToLower();
-                //converting retrieved word to underscored string
+                //convert loaded word to underscored string
                 string currentState = new string('_', theWord.Length);
 
-                int Lives = 5; //declare var, set it to 5
+                int Lives = userLives;
+                int Money = userMoney;
 
                 Console.WriteLine($"----------------------");
                 Console.WriteLine("THE GAME HAS STARTED!");
                 Console.WriteLine($"----------------------");
-                Console.WriteLine($"You have bet {bet} USD ");
+                Console.WriteLine($"Player: {userName}, Money: {userMoney} - You have bet {bet} USD ");
+                Console.WriteLine($"");
+                Console.WriteLine("Enter your first guess.");
                 Console.WriteLine($"");
                 Console.WriteLine($"{currentState}");
                 Console.WriteLine($"");
-                Console.WriteLine("Enter your first guess: ");
+
+                DrawLives(Lives);
+                Console.WriteLine($"Lives: {Lives}");
+                Console.WriteLine($"");
 
 
                 while (currentState.Length > 0)
@@ -84,10 +107,6 @@ namespace HM
 
                     if (currentState != null)
                     {
-
-                        // char[] word = userInput.ToCharArray();
-
-                        // Console.WriteLine(word);
 
                         //USER GUESSING
                         Console.Write("Enter a letter: ");
@@ -120,13 +139,12 @@ namespace HM
                                 {
                                     wrongGuess(let1, ref currentState);
                                     Lives--;
-
                                 }
 
+                                //Show amount of lives left to user
+                                DrawLives(Lives);
                                 Console.WriteLine($"Lives: {Lives}");
                                 Console.WriteLine($"");
-
-
                             }
                         }
                         else
@@ -136,9 +154,7 @@ namespace HM
                             Console.WriteLine("Please enter a valid single letter.");
                             Console.WriteLine($"----------------------");
                             ShowCurrentGameStatus(currentState);
-
                         }
-
                     }
                     else
                     {
@@ -160,6 +176,7 @@ namespace HM
                     }
                     else if (Lives == 0)
                     {
+
                         GameOver(theWord, currentState, ref Lives);
 
 
@@ -169,59 +186,133 @@ namespace HM
 
             //****METHODS****
 
-            static string AddUser()
+
+            static void ViewPlayers()
             {
+                users = LoadUsers();
+
+                Console.WriteLine("PLAYERS:");
+                Console.WriteLine("---------");
+                int Number = 1;
+                foreach (var user in users)
+                {
+                    Console.WriteLine($"[{Number}] {user.Name} - Money:{user.Money}, Lives:{user.Lives}");
+                    Number++; //Adding 1 to each message when printing them in console
+                }
+
+                Console.WriteLine("");
+                Console.WriteLine("Press enter to return to menu");
+                Console.ReadLine();
+
+            }
+
+            static void AddNewUser()
+            {
+                Console.Write("Enter your name: ");
+                string? name = Console.ReadLine();
+
                 while (true)
                 {
-                    Console.WriteLine("Enter your name: ");
-                    string? name = Console.ReadLine();
                     if (!string.IsNullOrEmpty(name))
                     {
-                        Console.Clear();
-                        return name;
+                        List<User> allUsers = LoadUsers(); // Load existing users
+                        User newUser = new User(name, 10, 7); // Create a new user
+                        allUsers.Add(newUser); // Add the new user to the list
+                        SaveUsers(allUsers); // Save the updated list to the JSON file
+
+                        Console.WriteLine("User has been added and saved to users.json");
+
+
+                        List<User> users = LoadUsers(); // Load your list of users after saving
+                        // Find the index of the newly added user
+                        int index = users.FindIndex(user => user.Name == name);
+
+
+                        SelectedPlayer(index);
+
+
+
                     }
                     else
                     {
                         Console.WriteLine("Invalid input. Please enter a valid name.");
                     }
+                    break;
+                }
+            }
+
+            static List<User> LoadUsers()
+            {
+                if (File.Exists(FilePathUsers))
+                {
+                    string json = File.ReadAllText(FilePathUsers);
+                    return JsonConvert.DeserializeObject<List<User>>(json) ?? new List<User>();
+                }
+                else
+                {
+                    return new List<User>();
                 }
             }
 
 
+            static void SaveUsers(List<User> userList)
+            {
+                string json = JsonConvert.SerializeObject(userList, Formatting.Indented);
+                File.WriteAllText(FilePathUsers, json);
+            }
 
-            //make user bet before start
-            static int Bets()
+
+            static void DisplayAllUsers()
             {
 
-                while (true)
+                users = LoadUsers();
+
+                Console.WriteLine("PLAYERS:");
+                Console.WriteLine("---------");
+                int Number = 1;
+                foreach (var user in users)
                 {
-                    Console.Write("Do you want to make a bet? Y/N? ");
-                    string? input = Console.ReadLine();
-                    if (!string.IsNullOrEmpty(input) && input == "y" || input == "Y")
-                    {
-                        Console.Write("How much (USD)? ");
-                        int bets = Convert.ToInt16(Console.ReadLine());
-                        Console.Clear();
-                        return bets;
-
-                    }
-                    else if (!string.IsNullOrEmpty(input) && input == "n" || input == "N")
-                    {
-                        Console.WriteLine("No bets.");
-                        int bets = 0;
-                        Console.Clear();
-                        return bets;
-
-                    }
+                    Console.WriteLine($"[{Number}] {user.Name} - Money:{user.Money}, Lives:{user.Lives}");
+                    Number++; //Adding 1 to each message when printing them in console
                 }
+
+                Console.WriteLine("");
+                Console.WriteLine("Select a player by entering the corresponding number");
+                Console.WriteLine("Or press 'N' to create a new player");
+                Console.Write("Choose: ");
+                string? choice = Console.ReadLine();
+
+                if (!String.IsNullOrEmpty(choice) && (choice == "N" || choice == "n"))
+                {
+                    AddNewUser();
+                }
+                else if (int.TryParse(choice, out int index) && index <= users.Count)
+                {
+                    SelectedPlayer(index - 1); // Adjust the iplayer of the chosen index
+                }
+            }
+
+            static void SelectedPlayer(int index)
+            {
+                Console.WriteLine($"You selected: {users[index].Name}");
+                // Update Lives with the lives from the selected user
+                int Lives = users[index].Lives;
+                // Update money with the money from the selected user
+                int Money = users[index].Money;
+                // Update name with the money from the selected user
+                string Name = users[index].Name;
+
+                PlayHangman(Name, Lives, Money);
             }
 
 
 
-            //loads hangmanword from json-file
+
+
+            //Loads hangmanword from json-file
             static string LoadHangmanWord()
             {
-                if (File.Exists(FilePath))
+                if (File.Exists(FilePathWord))
                 {
                     List<wordBank> randomword = LoadWords();
                     Random r = new Random();
@@ -248,7 +339,7 @@ namespace HM
             static void SaveData(List<wordBank> data)
             {
                 string json = JsonConvert.SerializeObject(data);
-                File.WriteAllText(FilePath, json);
+                File.WriteAllText(FilePathWord, json);
             }
 
 
@@ -256,9 +347,9 @@ namespace HM
             // Load existing words from the file
             static List<wordBank> LoadWords()
             {
-                if (File.Exists(FilePath))
+                if (File.Exists(FilePathWord))
                 {
-                    string json = File.ReadAllText(FilePath);
+                    string json = File.ReadAllText(FilePathWord);
                     return JsonConvert.DeserializeObject<List<wordBank>>(json) ?? new List<wordBank>();
                 }
                 else
@@ -286,6 +377,10 @@ namespace HM
                         existingWords.Add(word);
                         SaveData(existingWords);
                         Console.WriteLine("Word added successfully!");
+                        Console.WriteLine("Press enter to return to menu");
+                        Console.ReadLine();
+
+
                     }
                     else
                     {
@@ -375,8 +470,9 @@ namespace HM
             {
                 Console.Clear();
                 Console.WriteLine($"----------------------");
-                Console.WriteLine($"GAME OVER! You have no more lives.");
+                Console.WriteLine($"GAME OVER!");
                 Console.WriteLine($"----------------------");
+                DrawLives(Lives);
                 Console.WriteLine($"Do you want to buy more lives?");
                 Console.Write($"Y/N : ");
                 string? purchase = Console.ReadLine();
@@ -443,7 +539,7 @@ namespace HM
             }
 
 
-            
+
             //make user pay for more lives
             static void GetMoreLives(string currentState)
             {
@@ -463,6 +559,125 @@ namespace HM
                 Console.WriteLine(currentState.ToUpper());
                 Console.WriteLine($"");
 
+            }
+
+
+
+            //make user bet before start
+            static int Bets()
+            {
+
+                while (true)
+                {
+                    Console.Write("Do you want to make a bet? Y/N? ");
+                    string? input = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(input) && input == "y" || input == "Y")
+                    {
+                        Console.Write("How much (USD)? ");
+                        int bets = Convert.ToInt16(Console.ReadLine());
+                        Console.Clear();
+                        return bets;
+
+                    }
+                    else if (!string.IsNullOrEmpty(input) && input == "n" || input == "N")
+                    {
+                        Console.WriteLine("No bets.");
+                        int bets = 0;
+                        Console.Clear();
+                        return bets;
+
+                    }
+                }
+            }
+
+
+
+            static void DrawLives(int Lives)
+            {
+                switch (Lives)
+                {
+                    case 5:
+                        Console.WriteLine("   -------------------");
+                        Console.WriteLine("   |  /              |");
+                        Console.WriteLine("   | /        ");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+
+                    case 4:
+                        Console.WriteLine("   -------------------");
+                        Console.WriteLine("   |  /              |");
+                        Console.WriteLine("   | /              ('')");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+
+                    case 3:
+                        Console.WriteLine("   -------------------");
+                        Console.WriteLine("   |  /               |");
+                        Console.WriteLine("   | /               ('')");
+                        Console.WriteLine("   |                 /|| ");
+                        Console.WriteLine("   |                  ||");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+
+                    case 2:
+                        Console.WriteLine("   -------------------");
+                        Console.WriteLine("   |  /              |");
+                        Console.WriteLine("   | /              ('')");
+                        Console.WriteLine("   |                /|| ");
+                        Console.WriteLine("   |                 ||");
+                        Console.WriteLine("   |                /   ");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+                    case 1:
+                        Console.WriteLine("   -------------------      __________________                     ");
+                        Console.WriteLine("   |  /              |      |                |   ");
+                        Console.WriteLine("   | /              (**) ---|  LAST CHANCE!  |   ");
+                        Console.WriteLine("   |                /||     |________________|   ");
+                        Console.WriteLine("   |                 ||              ");
+                        Console.WriteLine("   |                / ");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+                    case 0:
+                        Console.WriteLine("   -------------------");
+                        Console.WriteLine("   |  /              |   ");
+                        Console.WriteLine("   | /               |   ");
+                        Console.WriteLine("   |                 |  ");
+                        Console.WriteLine("   |                (--) ");
+                        Console.WriteLine("   |                /||   ");
+                        Console.WriteLine("   |                 ||      ");
+                        Console.WriteLine("   |                 /           ");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+
+                    default:
+                        Console.WriteLine("   -------------------");
+                        Console.WriteLine("   |  /   ");
+                        Console.WriteLine("   | /   ");
+                        Console.WriteLine("   |    ");
+                        Console.WriteLine("   |  ");
+                        Console.WriteLine("   | ");
+                        Console.WriteLine("   | ");
+                        Console.WriteLine("   |   ");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+                }
             }
         }
     }
