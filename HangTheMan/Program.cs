@@ -35,7 +35,8 @@ namespace HM
                 Console.WriteLine($"1. Play Hangman");
                 Console.WriteLine($"2. Add new word");
                 Console.WriteLine($"3. Players");
-                Console.WriteLine($"4. Exit");
+                Console.WriteLine($"4. Hangman rules");
+                Console.WriteLine($"5. Exit");
                 Console.WriteLine($"");
                 Console.WriteLine($"--------------");
 
@@ -51,20 +52,26 @@ namespace HM
                     case "2":
                         AddWord();
                         break;
+
                     case "3":
                         ViewPlayers();
                         break;
 
                     case "4":
+                        //    Rules();
+                        break;
+
+                    case "5":
                         exit = true;
                         break;
 
                     default:
                         Console.WriteLine("Invalid choice. Exiting.");
+                        Environment.Exit(0);
+
                         break;
                 }
             } while (!exit);
-
 
 
 
@@ -74,8 +81,19 @@ namespace HM
             {
 
 
-                // int bet = Bets();
-                int bet = 0;
+                int bet = Bets();
+
+                if (bet > 0)
+                {
+                    List<User> users = LoadUsers();
+                    User currentUser = users.Find(user => user.Name == userName);
+
+                    if (currentUser != null)
+                    {
+                        currentUser.Money -= bet;
+                        SaveUsers(users);
+                    }
+                }
 
                 //START APP WITH CONSOLE CLEAR 
                 Console.Clear();
@@ -164,28 +182,48 @@ namespace HM
 
                     // if (userInput.Length == userInput_)
                     if (currentState == theWord)
-
                     {
                         Console.Clear();
                         Console.WriteLine($"----------------------");
                         Console.WriteLine($"Congratulations! You won! The correct word was: '{theWord.ToUpper()}'.");
                         Console.WriteLine($"----------------------");
-                        Console.ReadKey();
-                        break;
 
+                        if (bet > 0)
+                        {
+                            User currentUser = users.Find(user => user.Name == userName);
+
+                            if (currentUser != null)
+                            {
+                                currentUser.Money += bet;
+                                SaveUsers(users);
+                            }
+                        }
+
+                        List<User> users_update = LoadUsers();
+                        User currentUser_update = users.Find(user => user.Name == userName);
+
+                        Console.WriteLine($"You won {bet} USD!");
+                        Console.WriteLine($"Player: {currentUser_update.Name}");
+                        Console.WriteLine($"Money: {currentUser_update.Money} USD");
+                        Console.WriteLine($"Lives: {currentUser_update.Lives}");
+                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"Press enter to return to menu");
+                        Console.ReadLine();
+                        break;
                     }
                     else if (Lives == 0)
                     {
 
-                        GameOver(theWord, currentState, ref Lives);
-
+                        GameOver(theWord, currentState, ref Lives, bet, userName);
 
                     }
                 }
             }
 
-            //****METHODS****
 
+
+
+            //****METHODS****
 
             static void ViewPlayers()
             {
@@ -206,6 +244,7 @@ namespace HM
 
             }
 
+            //Add a new user when user presses 'N' at start
             static void AddNewUser()
             {
                 Console.Write("Enter your name: ");
@@ -218,19 +257,15 @@ namespace HM
                         List<User> allUsers = LoadUsers(); // Load existing users
                         User newUser = new User(name, 10, 7); // Create a new user
                         allUsers.Add(newUser); // Add the new user to the list
-                        SaveUsers(allUsers); // Save the updated list to the JSON file
+                        SaveUsers(allUsers); // Save the updated list to the json file
 
                         Console.WriteLine("User has been added and saved to users.json");
 
 
-                        List<User> users = LoadUsers(); // Load your list of users after saving
-                        // Find the index of the newly added user
+                        List<User> users = LoadUsers(); // Load list after saving
+                        // Find index of the added user
                         int index = users.FindIndex(user => user.Name == name);
-
-
                         SelectedPlayer(index);
-
-
 
                     }
                     else
@@ -241,6 +276,7 @@ namespace HM
                 }
             }
 
+            //Loads alla users in users LIST - User
             static List<User> LoadUsers()
             {
                 if (File.Exists(FilePathUsers))
@@ -255,6 +291,7 @@ namespace HM
             }
 
 
+            //Saves a user after creating one
             static void SaveUsers(List<User> userList)
             {
                 string json = JsonConvert.SerializeObject(userList, Formatting.Indented);
@@ -262,6 +299,7 @@ namespace HM
             }
 
 
+            //Displays all users from List
             static void DisplayAllUsers()
             {
 
@@ -292,6 +330,7 @@ namespace HM
                 }
             }
 
+            //Send selected player with data to Hangman-Game
             static void SelectedPlayer(int index)
             {
                 Console.WriteLine($"You selected: {users[index].Name}");
@@ -304,6 +343,8 @@ namespace HM
 
                 PlayHangman(Name, Lives, Money);
             }
+
+
 
 
 
@@ -335,7 +376,7 @@ namespace HM
             }
 
 
-
+            //Saves a word after putting it in
             static void SaveData(List<wordBank> data)
             {
                 string json = JsonConvert.SerializeObject(data);
@@ -466,55 +507,63 @@ namespace HM
             }
 
             //if user looses game!
-            static void GameOver(string theWord, string currentState, ref int Lives)
+            static void GameOver(string theWord, string currentState, ref int Lives, int bet, string userName)
             {
-                Console.Clear();
-                Console.WriteLine($"----------------------");
-                Console.WriteLine($"GAME OVER!");
-                Console.WriteLine($"----------------------");
-                DrawLives(Lives);
-                Console.WriteLine($"Do you want to buy more lives?");
-                Console.Write($"Y/N : ");
-                string? purchase = Console.ReadLine();
-
-                if (purchase == "y" || purchase == "Y")
+                while (true)
                 {
-                    Console.WriteLine(" ");
-                    Console.WriteLine($"THE LIFE SHOP");
-                    Console.WriteLine($"----------------------");
-                    Console.WriteLine($"1 life = 1 USD");
-                    Console.Write($"How many lives to you want to purchase? ");
-                    string? purchasedLives = Console.ReadLine();
-                    int.TryParse(purchasedLives, out int newLives);
-                    Lives = newLives;
+
 
                     Console.Clear();
-                    Console.WriteLine($"You have {newLives} new lives.");
-
-                    Lives = newLives;
-                    GetMoreLives(currentState);
-
-                }
-                else if (purchase == "n" || purchase == "N")
-                {
-                    Console.Clear();
                     Console.WriteLine($"----------------------");
-                    Console.WriteLine($"THE END! Thanks for playing.");
-                    Console.WriteLine($"The correct word was: '{theWord.ToUpper()}'.");
+                    Console.WriteLine($"GAME OVER!");
                     Console.WriteLine($"----------------------");
-                    Console.ReadKey();
-                    Environment.Exit(0);
-
-                }
-                else
-                {
-                    Console.Clear();
+                    DrawLives(Lives);
                     Console.WriteLine($"Do you want to buy more lives?");
-                    Console.Write($"YES or NO? ");
-                    Console.ReadKey();
+                    Console.Write($"Y/N : ");
+                    string? purchase = Console.ReadLine();
+
+                    if (!String.IsNullOrEmpty(purchase) && purchase == "y" || purchase == "Y")
+                    {
+                        Console.WriteLine(" ");
+                        Console.WriteLine($"THE LIFE SHOP");
+                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"1 life = 1 USD");
+                        Console.Write($"How many lives to you want to purchase? ");
+                        string? purchasedLives = Console.ReadLine();
+                        int.TryParse(purchasedLives, out int newLives);
+                        Lives = newLives;
+
+                        Console.Clear();
+                        Console.WriteLine($"You have {newLives} new lives.");
+
+                        Lives = newLives;
+                        GetMoreLives(currentState);
+                        break;
+
+                    }
+                    else if (!String.IsNullOrEmpty(purchase) && purchase == "n" || purchase == "N")
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"THE END! Thanks for playing.");
+                        Console.WriteLine($"The correct word was: '{theWord.ToUpper()}'.");
+                        Console.WriteLine($"----------------------");
+
+                        User currentUser = users.Find(user => user.Name == userName);
+                        currentUser.Money -= bet;
+
+                        Console.WriteLine($"You lost {bet} USD!");
+                        Console.WriteLine($"Player: {currentUser.Name}");
+                        Console.WriteLine($"Money: {currentUser.Money} USD");
+                        Console.WriteLine($"Lives: {currentUser.Lives}");
+                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"Press enter to exit.");
+                        Console.ReadLine();
+                        Environment.Exit(0);
+                        break;
+
+                    }
                 }
-
-
             }
 
 
@@ -543,7 +592,6 @@ namespace HM
             //make user pay for more lives
             static void GetMoreLives(string currentState)
             {
-
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
 
                 // Console Guessd words
