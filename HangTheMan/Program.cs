@@ -82,19 +82,25 @@ namespace HM
 
                 List<User> users = LoadUsers();
 
-                int bet = Bets();
-
-                if (bet > 0)
+                if (userLives == 0 && userMoney > 0)
                 {
-
-                    User currentUser = users.Find(user => user.Name == userName);
-
-                    if (currentUser != null)
-                    {
-                        currentUser.Money -= bet;
-                        SaveUsers(users);
-                    }
+                    StartGameWithZeroLives(userName);
                 }
+                else if (userLives == 0 && userMoney == 0)
+                {
+                    oneLastChance(userName, userMoney);
+                }
+
+                int bet;
+                if (userMoney > 0)
+                {
+                    bet = Bets(userName);
+                }
+                else
+                {
+                    bet = 0;
+                }
+
 
                 //START APP WITH CONSOLE CLEAR 
                 Console.Clear();
@@ -102,6 +108,9 @@ namespace HM
                 string theWord = LoadHangmanWord().ToLower();
                 //convert loaded word to underscored string
                 string currentState = new string('_', theWord.Length);
+
+                char[] guessesLetterArray = new char[theWord.Length]; // Reset the guessed letters array
+                Array.Fill(guessesLetterArray, '_'); // Fill the array with underscores
 
                 int Lives = userLives;
                 int Money = userMoney;
@@ -147,7 +156,6 @@ namespace HM
                             }
                             else
                             {
-
                                 char let1_ = Char.ToLower(let1[0]);
                                 if (theWord.IndexOf(let1_, StringComparison.OrdinalIgnoreCase) != -1)
 
@@ -179,8 +187,6 @@ namespace HM
                     {
                         return;
                     }
-
-
                     // if (userInput.Length == userInput_)
                     if (currentState == theWord)
                     {
@@ -260,14 +266,22 @@ namespace HM
                         allUsers.Add(newUser); // Add the new user to the list
                         SaveUsers(allUsers); // Save the updated list to the json file
 
-                        Console.WriteLine("User has been added and saved to users.json");
+                        Console.Clear();
+                        Console.WriteLine("------------------------------------------------");
+                        Console.WriteLine("Your user is created! You have been given 10 USD and 7 lives to start with. ");
+                        Console.WriteLine($"");
+                        Console.WriteLine($"Name: {name}");
+                        Console.WriteLine($"Money: 10 USD");
+                        Console.WriteLine($"Lives: 7");
 
+                        // List<User> users = LoadUsers(); // Load list after saving
+                        users = LoadUsers(); // Load the updated list into the global variable
 
-                        List<User> users = LoadUsers(); // Load list after saving
-                        // Find index of the added user
                         int index = users.FindIndex(user => user.Name == name);
-                        SelectedPlayer(index);
+                        Console.WriteLine($"Index: {index}");
+                        Console.WriteLine("");
 
+                        SelectedPlayer(index);
                     }
                     else
                     {
@@ -327,7 +341,7 @@ namespace HM
                 }
                 else if (int.TryParse(choice, out int index) && index <= users.Count)
                 {
-                    SelectedPlayer(index - 1); // Adjust the iplayer of the chosen index
+                    SelectedPlayer(index -= 1); // Adjust the index to choose right player
                 }
             }
 
@@ -335,12 +349,18 @@ namespace HM
             static void SelectedPlayer(int index)
             {
                 Console.WriteLine($"You selected: {users[index].Name}");
+
+                // Directly modify the user's data
+                User selectedUser = users[index];
                 // Update Lives with the lives from the selected user
-                int Lives = users[index].Lives;
+                int Lives = selectedUser.Lives;
                 // Update money with the money from the selected user
-                int Money = users[index].Money;
+                int Money = selectedUser.Money;
                 // Update name with the money from the selected user
-                string Name = users[index].Name;
+                string Name = selectedUser.Name;
+
+                // Save the changes to the JSON file
+                SaveUsers(users);
 
                 PlayHangman(Name, Lives, Money);
             }
@@ -375,6 +395,90 @@ namespace HM
                 }
                 return null;
             }
+
+
+
+
+
+            static void StartGameWithZeroLives(string userName)
+            {
+
+
+                User currentUser = users.Find(user => user.Name == userName);
+
+                while (true)
+                {
+
+                    Console.WriteLine($"Do you want to buy more lives and keep playing?");
+                    Console.Write($"Y/N : ");
+                    string? purchase = Console.ReadLine();
+
+                    if (!String.IsNullOrEmpty(purchase) && (purchase == "y" || purchase == "Y"))
+                    {
+
+                        Console.WriteLine(" ");
+                        Console.WriteLine($"THE LIFE SHOP");
+                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"1 life = 1 USD");
+                        Console.WriteLine($"");
+                        Console.WriteLine($"Money: {currentUser.Money} USD");
+                        Console.WriteLine($"");
+                        Console.Write($"How many lives to you want to purchase? ");
+                        string? purchasedLives = Console.ReadLine();
+                        int.TryParse(purchasedLives, out int newLives);
+
+                        if (newLives > currentUser.Money) //since one life cost the same as one USD 
+                        {
+                            Console.WriteLine($"You don't have enought money to buy {newLives} new lives.");
+                        }
+                        else
+                        {
+                            Console.Write($"Are you sure you want to buy {newLives} lives for {newLives} USD? Y/N: ");
+                            string? choice = Console.ReadLine();
+
+                            if (!String.IsNullOrEmpty(choice) && (choice == "y" || choice == "Y"))
+                            {
+                                Console.Clear();
+                                Console.WriteLine($"You have bought {newLives} new lives!");
+
+                                currentUser.Lives = newLives;
+                                if (currentUser != null)
+                                {
+                                    currentUser.Lives = 0;
+                                    currentUser.Lives += newLives;
+                                    // currentUser.Money -= newLives;
+                                    SaveUsers(users); // Save the changes to the JSON file
+                                }
+
+                                break;
+                            }
+                            else if (!String.IsNullOrEmpty(choice) && (choice == "n" || choice == "N"))
+                            {
+                                Console.WriteLine($"No lives bought.");
+
+                            }
+                            else if (String.IsNullOrEmpty(choice))
+                            {
+                                Console.WriteLine($"Y/N");
+
+                            }
+                        }
+                    }
+                    else if (!String.IsNullOrEmpty(purchase) && purchase == "n" || purchase == "N")
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"Exiting game.");
+                        Console.WriteLine($"----------------------");
+                        Console.ReadLine();
+                        Environment.Exit(0);
+                        break;
+                    }
+                }
+            }
+
+
+
 
 
             //Saves a word after putting it in
@@ -507,6 +611,9 @@ namespace HM
             //if user looses game!
             static void GameOver(string theWord, string currentState, ref int Lives, int bet, string userName, int userMoney)
             {
+
+                User currentUser = users.Find(user => user.Name == userName);
+
                 while (true)
                 {
                     Console.Clear();
@@ -515,34 +622,31 @@ namespace HM
                     Console.WriteLine($"----------------------");
                     DrawLives(Lives);
 
-                    if (userMoney == 0)
+                    if (currentUser.Money == 0)
                     {
-                        oneLastChance(bet, userName, userMoney);
+                        oneLastChance(userName, userMoney);
 
                     }
 
-                    Console.WriteLine($"Do you want to buy more lives?");
+                    Console.WriteLine($"Do you want to buy more lives and keep playing?");
                     Console.Write($"Y/N : ");
                     string? purchase = Console.ReadLine();
 
-
                     if (!String.IsNullOrEmpty(purchase) && (purchase == "y" || purchase == "Y"))
                     {
-
-                        User currentUser = users.Find(user => user.Name == userName);
 
                         Console.WriteLine(" ");
                         Console.WriteLine($"THE LIFE SHOP");
                         Console.WriteLine($"----------------------");
                         Console.WriteLine($"1 life = 1 USD");
                         Console.WriteLine($"");
-                        Console.WriteLine($"Money: {currentUser.Money}");
+                        Console.WriteLine($"Money: {currentUser.Money} USD");
                         Console.WriteLine($"");
                         Console.Write($"How many lives to you want to purchase? ");
                         string? purchasedLives = Console.ReadLine();
                         int.TryParse(purchasedLives, out int newLives);
 
-                        if (newLives > currentUser.Money) //since one life cost the same as one usd 
+                        if (newLives > currentUser.Money) //since one life cost the same as one USD 
                         {
                             Console.WriteLine($"You don't have enought money to buy {newLives} new lives.");
                         }
@@ -556,14 +660,12 @@ namespace HM
                                 Console.Clear();
                                 Console.WriteLine($"You have bought {newLives} new lives!");
 
-                                // User user = users.Find(user => user.Name == userName);
-
                                 Lives = newLives;
                                 if (currentUser != null)
                                 {
                                     currentUser.Lives = 0;
-                                    currentUser.Lives += Lives;
-                                    currentUser.Money -= currentUser.Money - Lives;
+                                    currentUser.Lives += newLives;
+                                    // currentUser.Money -= newLives;
                                     SaveUsers(users); // Save the changes to the JSON file
                                 }
 
@@ -590,13 +692,19 @@ namespace HM
                         Console.WriteLine($"The correct word was: '{theWord.ToUpper()}'.");
                         Console.WriteLine($"----------------------");
 
-                        User currentUser = users.Find(user => user.Name == userName);
-                        currentUser.Money -= bet;
+                        User currentUser_ = users.Find(user => user.Name == userName);
 
-                        Console.WriteLine($"You lost {bet} USD!");
-                        Console.WriteLine($"Player: {currentUser.Name}");
-                        Console.WriteLine($"Money: {currentUser.Money} USD");
-                        Console.WriteLine($"Lives: {currentUser.Lives}");
+                        if (currentUser_ != null)
+                        {
+                            // currentUser_.Money -= bet;
+                            currentUser_.Lives = 0;
+                            SaveUsers(users); // Save the changes immediately
+                        }
+
+                        Console.WriteLine($"You lost your bet of {bet} USD!");
+                        Console.WriteLine($"Player: {currentUser_.Name}");
+                        Console.WriteLine($"Money: {currentUser_.Money} USD");
+                        Console.WriteLine($"Lives: {currentUser_.Lives}");
                         Console.WriteLine($"----------------------");
                         Console.WriteLine($"Press enter to exit.");
                         Console.ReadLine();
@@ -606,6 +714,7 @@ namespace HM
                     }
                 }
             }
+
 
 
             static void ShowCurrentGameStatus(string currentState)
@@ -660,22 +769,36 @@ namespace HM
 
 
             //make user bet before start
-            static int Bets()
+            static int Bets(string userName)
             {
 
                 while (true)
                 {
                     Console.Write("Do you want to make a bet? Y/N? ");
                     string? input = Console.ReadLine();
-                    if (!string.IsNullOrEmpty(input) && input == "y" || input == "Y")
+
+                    User currentUser = users.Find(user => user.Name == userName);
+
+
+                    if (!string.IsNullOrEmpty(input) && (input == "y" || input == "Y"))
                     {
                         Console.Write("How much (USD)? ");
                         int bets = Convert.ToInt16(Console.ReadLine());
-                        Console.Clear();
-                        return bets;
+
+                        if (currentUser != null && currentUser.Money < bets)
+                        {
+                            Console.WriteLine("You don't have enough money to make that bet.");
+                        }
+                        else
+                        {
+                            // Console.Clear();
+                            currentUser.Money -= bets;
+                            SaveUsers(users); // Save the changes immediately
+                            return bets;
+                        }
 
                     }
-                    else if (!string.IsNullOrEmpty(input) && input == "n" || input == "N")
+                    else if (!string.IsNullOrEmpty(input) && (input == "n" || input == "N"))
                     {
                         Console.WriteLine("No bets.");
                         int bets = 0;
@@ -779,13 +902,13 @@ namespace HM
 
 
             //The very last change
-            static void oneLastChance(int bet, string userName, int userMoney)
+            static void oneLastChance(string userName, int userMoney)
             {
-                Console.WriteLine($"You have no money!");
+                Console.WriteLine($"You have no money or lives left!");
                 Console.WriteLine("˙◠˙");
                 Thread.Sleep(2000);
 
-                Console.Clear();
+                Console.WriteLine("");
                 Console.Write("Wait");
                 for (int i = 0; i < 3; i++)
                 {
@@ -793,6 +916,7 @@ namespace HM
                     Console.Write(".");
                 }
                 Thread.Sleep(2000);
+                Console.WriteLine("");
                 Console.Write("The Hangman is coming");
                 for (int i = 0; i < 3; i++)
                 {
@@ -800,25 +924,122 @@ namespace HM
                     Console.Write(".");
                 }
 
+                Thread.Sleep(1000);
+                Console.WriteLine("");
+                Console.WriteLine("");
                 Console.WriteLine("       \\\\|||////                        ");
-                Console.WriteLine("    .    =======                          ");
+                Console.WriteLine("    .   =======                          ");
                 Console.WriteLine("  // \\ | O   O |                          ");
-                Console.WriteLine("  \\ // \\`___'//                          ");
+                Console.WriteLine("  \\ //  \\`___'//                          ");
                 Console.WriteLine("     #    _| |_                             ");
                 Console.WriteLine("    (#)  (     )                         ");
-                Console.WriteLine("     #\\//|* *|\\                         ");
-                Console.WriteLine("     #\\/(  *  )/                       ");
+                Console.WriteLine("     #\\ //|* *|\\                         ");
+                Console.WriteLine("     #\\ /(  *  )/                       ");
                 Console.WriteLine("      #   =====                        ");
                 Console.WriteLine("      #   ( U )                          ");
                 Console.WriteLine("      #   || ||                       ");
                 Console.WriteLine("     *#---'| |`----.                  ");
                 Console.WriteLine("     '#----' `-----'                  ");
-
+                Console.WriteLine("");
                 Thread.Sleep(2000);
-                Console.Write("Hangman: 'Hello ' ");
+
+                string sentence1 = $"Hangman: 'Hello {userName}'. ";
+                string sentence2 = "Hangman: 'I can see you have neither any money or lives left HAHAHA'.";
+                string sentence3 = "Hangman: 'Well, luckily for you I'm in a good mode today...'";
+                string sentence4 = "Hangman: 'and I'm willing to offer you a chance to stay a live a little longer'.";
+                string sentence5 = "Hangman: 'Are you interested? Y/N:'";
+                string sentence_YES = "Hangman: 'Ok then..'.";
+                string sentence_NO = $"Hangman: 'HAHAHAHAHA ok then good bye {userName}, maybe I'll see you on the other side.'.";
+                string sentence_NO2 = "Hangman: 'HAHAHAHAHAHAHHAHAHHAAHAHAHAHAHAHAHAHAHAHA'.";
+
+
+                foreach (char letter in sentence1)
+                {
+                    Console.Write(letter);
+                    Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                }
+                Console.ReadLine();
+
+                foreach (char letter in sentence2)
+                {
+                    Console.Write(letter);
+                    Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                }
+                Console.ReadLine();
+
+                foreach (char letter in sentence3)
+                {
+                    Console.Write(letter);
+                    Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                }
+                Console.WriteLine("");
+                foreach (char letter in sentence4)
+                {
+                    Console.Write(letter);
+                    Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                }
+                Console.ReadLine();
+                foreach (char letter in sentence5)
+                {
+                    Console.Write(letter);
+                    Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                }
+                string? answer = Console.ReadLine();
+
+                //if chance is taken
+                if (!String.IsNullOrEmpty(answer) && (answer == "Y" || answer == "y"))
+                {
+                    foreach (char letter in sentence_YES)
+                    {
+                        Console.Write(letter);
+                        Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                    }
 
 
 
+
+
+
+
+                }
+                else if (!String.IsNullOrEmpty(answer) && (answer == "N" || answer == "n"))
+                {
+                    foreach (char letter in sentence_NO)
+                    {
+                        Console.Write(letter);
+                        Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                    }
+                    Console.WriteLine("");
+                    foreach (char letter in sentence_NO2)
+                    {
+                        Console.Write(letter);
+                        Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                    }
+                    Thread.Sleep(1000);
+                    Console.WriteLine();
+                    removeUser(userName); //run method to remomve user
+
+                    Environment.Exit(0); //exit game
+                }
+            }
+
+            static void removeUser(string userName)
+            {
+                List<User> users = LoadUsers(); // Load existing users
+                // Find the user with the specified userName
+                User userToRemove = users.Find(user => user.Name == userName);
+                if (userToRemove != null)
+                {
+                    // Remove the user from the list
+                    users.Remove(userToRemove);
+                    // Save the updated list to the JSON file
+                    SaveUsers(users);
+                    Console.WriteLine($"User '{userName}' has been removed from the game.");
+                }
+                else
+                {
+                    Console.WriteLine($"User '{userName}' not found.");
+                }
             }
 
         }
