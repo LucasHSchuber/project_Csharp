@@ -35,7 +35,7 @@ namespace HM
                 Console.WriteLine($"1. Play Hangman");
                 Console.WriteLine($"2. Add new word");
                 Console.WriteLine($"3. Players");
-                Console.WriteLine($"4. Hangman rules");
+                Console.WriteLine($"4. Rules");
                 Console.WriteLine($"5. Exit");
                 Console.WriteLine($"");
                 Console.WriteLine($"--------------");
@@ -58,7 +58,7 @@ namespace HM
                         break;
 
                     case "4":
-                        //    Rules();
+                        Rules();
                         break;
 
                     case "5":
@@ -84,7 +84,7 @@ namespace HM
 
                 if (userLives == 0 && userMoney > 0)
                 {
-                    StartGameWithZeroLives(userName);
+                    StartGameWithZeroLives(userName, userLives, userMoney);
                 }
                 else if (userLives == 0 && userMoney == 0)
                 {
@@ -195,24 +195,30 @@ namespace HM
                         Console.WriteLine($"Congratulations! You won! The correct word was: '{theWord.ToUpper()}'.");
                         Console.WriteLine($"----------------------");
 
+
                         if (bet > 0)
                         {
-                            User currentUser = users.Find(user => user.Name == userName);
+                            users = LoadUsers();
+                            User currentUser___ = users.Find(user => user.Name == userName);
 
-                            if (currentUser != null)
+                            if (currentUser___ != null)
                             {
-                                currentUser.Money += bet;
+                                currentUser___.Lives = Lives;
+                                currentUser___.Money += (bet + bet);
                                 SaveUsers(users);
                             }
                         }
 
-                        List<User> users_update = LoadUsers();
+                        users = LoadUsers();
+                        // List<User> users_update = LoadUsers();
                         User currentUser_update = users.Find(user => user.Name == userName);
-
+                        int new_Lives = Lives;
+                        currentUser_update.Lives = Lives;
+                        SaveUsers(users);
                         Console.WriteLine($"You won {bet} USD!");
                         Console.WriteLine($"Player: {currentUser_update.Name}");
                         Console.WriteLine($"Money: {currentUser_update.Money} USD");
-                        Console.WriteLine($"Lives: {currentUser_update.Lives}");
+                        Console.WriteLine($"Lives: {new_Lives}");
                         Console.WriteLine($"----------------------");
                         Console.WriteLine($"Press enter to return to menu");
                         Console.ReadLine();
@@ -262,7 +268,7 @@ namespace HM
                     if (!string.IsNullOrEmpty(name))
                     {
                         List<User> allUsers = LoadUsers(); // Load existing users
-                        User newUser = new User(name, 10, 7); // Create a new user
+                        User newUser = new User(name, 20, 7); // Create a new user (name,USD,lives)
                         allUsers.Add(newUser); // Add the new user to the list
                         SaveUsers(allUsers); // Save the updated list to the json file
 
@@ -348,6 +354,7 @@ namespace HM
             //Send selected player with data to Hangman-Game
             static void SelectedPlayer(int index)
             {
+                // Console.Clear();
                 Console.WriteLine($"You selected: {users[index].Name}");
 
                 // Directly modify the user's data
@@ -400,9 +407,8 @@ namespace HM
 
 
 
-            static void StartGameWithZeroLives(string userName)
+            static void StartGameWithZeroLives(string userName, int userLives, int userMoney)
             {
-
 
                 User currentUser = users.Find(user => user.Name == userName);
 
@@ -446,7 +452,7 @@ namespace HM
                                 {
                                     currentUser.Lives = 0;
                                     currentUser.Lives += newLives;
-                                    // currentUser.Money -= newLives;
+                                    currentUser.Money -= newLives;
                                     SaveUsers(users); // Save the changes to the JSON file
                                 }
 
@@ -665,7 +671,7 @@ namespace HM
                                 {
                                     currentUser.Lives = 0;
                                     currentUser.Lives += newLives;
-                                    // currentUser.Money -= newLives;
+                                    currentUser.Money -= newLives;
                                     SaveUsers(users); // Save the changes to the JSON file
                                 }
 
@@ -1040,6 +1046,28 @@ namespace HM
                 {
                     Console.WriteLine($"User '{userName}' not found.");
                 }
+            }
+
+            static void Rules()
+            {
+                Console.Clear();
+                Console.WriteLine("-----------------------");
+                Console.WriteLine("RULES");
+                Console.WriteLine("-----------------------");
+                Console.WriteLine("BASICS:");
+                Console.WriteLine("   To play the Hangman game you going to need money and lives.");
+                Console.WriteLine("   If you run out of lives, you can always buy new lives for the money.");
+                Console.WriteLine("BETTING:");
+                Console.WriteLine("   To earn more money, you need to bet before the Hangman game.");
+                Console.WriteLine("   You will either loose or win the betting amount depending on if you win or loose the game.");
+                Console.WriteLine("-----------------------");
+
+
+                Console.WriteLine("");
+                Console.WriteLine("Press enter to return to menu");
+                Console.ReadLine();
+
+
             }
 
         }
