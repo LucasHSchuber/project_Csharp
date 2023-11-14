@@ -19,13 +19,10 @@ namespace HM
         const string FilePathWord = "json/hangmanwordbank.json"; //filename for storing words
         const string FilePathUsers = "json/users.json"; //filename for storing users
 
-
-
         static void Main(string[] args)
         {
 
             bool exit = false;
-
             do
             {
                 Console.Clear();
@@ -36,7 +33,7 @@ namespace HM
                 Console.WriteLine($"2. Add new word");
                 Console.WriteLine($"3. Players");
                 Console.WriteLine($"4. Rules");
-                Console.WriteLine($"5. Exit");
+                Console.WriteLine($"5. Quit game");
                 Console.WriteLine($"");
                 Console.WriteLine($"--------------");
 
@@ -62,13 +59,12 @@ namespace HM
                         break;
 
                     case "5":
+                        ExitApp();
                         exit = true;
                         break;
 
                     default:
                         Console.WriteLine("Invalid choice. Exiting.");
-                        Environment.Exit(0);
-
                         break;
                 }
             } while (!exit);
@@ -222,13 +218,23 @@ namespace HM
                         Console.WriteLine($"----------------------");
                         Console.WriteLine($"Press enter to return to menu");
                         Console.ReadLine();
+                        // Reset guessesLetter List and guessesLetterArray
+                        guessesLetter.Clear();
+                        guessesLetterArray = new char[theWord.Length];
+                        Array.Fill(guessesLetterArray, '_');
+
                         break;
                     }
                     else if (Lives == 0)
                     {
-
                         GameOver(theWord, currentState, ref Lives, bet, userName, userMoney);
 
+                        // Reset guessesLetter List and guessesLetterArray
+                        guessesLetter.Clear();
+                        guessesLetterArray = new char[theWord.Length];
+                        Array.Fill(guessesLetterArray, '_');
+
+                        break;
                     }
                 }
             }
@@ -268,17 +274,20 @@ namespace HM
                     if (!string.IsNullOrEmpty(name))
                     {
                         List<User> allUsers = LoadUsers(); // Load existing users
-                        User newUser = new User(name, 20, 7); // Create a new user (name,USD,lives)
+                        int StarMoney = 20;
+                        int StartLives = 7;
+                        User newUser = new User(name, StarMoney, StartLives); // Create a new user (name,USD,lives)
                         allUsers.Add(newUser); // Add the new user to the list
                         SaveUsers(allUsers); // Save the updated list to the json file
 
                         Console.Clear();
                         Console.WriteLine("------------------------------------------------");
-                        Console.WriteLine("Your user is created! You have been given 10 USD and 7 lives to start with. ");
+                        Console.WriteLine($"Your user '{name}' is created!");
+                        Console.WriteLine($"You have been given {StarMoney} USD and {StartLives} lives to start with. ");
                         Console.WriteLine($"");
                         Console.WriteLine($"Name: {name}");
-                        Console.WriteLine($"Money: 10 USD");
-                        Console.WriteLine($"Lives: 7");
+                        Console.WriteLine($"Money: {StarMoney} USD");
+                        Console.WriteLine($"Lives: {StartLives}");
 
                         // List<User> users = LoadUsers(); // Load list after saving
                         users = LoadUsers(); // Load the updated list into the global variable
@@ -477,6 +486,7 @@ namespace HM
                         Console.WriteLine($"Exiting game.");
                         Console.WriteLine($"----------------------");
                         Console.ReadLine();
+
                         Environment.Exit(0);
                         break;
                     }
@@ -1068,6 +1078,19 @@ namespace HM
                 Console.ReadLine();
 
 
+            }
+
+            static void ExitApp()
+            {
+
+                Console.Write("Quiting game");
+                for (int i = 0; i < 3; i++)
+                {
+                    Thread.Sleep(500);
+                    Console.Write(".");
+                }
+                Console.Write("");
+                Environment.Exit(0);
             }
 
         }
