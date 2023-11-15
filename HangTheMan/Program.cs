@@ -81,11 +81,18 @@ namespace HM
             static void PlayHangman(string userName, int userLives, int userMoney)
             {
 
-                List<User> users = LoadUsers();
 
+                int Lives = userLives;
+                int Money = userMoney;
+
+                List<User> users = LoadUsers();
+                int check_bought_lives = 0;
                 if (userLives <= 0 && userMoney > 0)
                 {
                     StartGameWithZeroLives(userName, userLives, userMoney);
+                    users = LoadUsers();
+                    User userLivesUpd = users.Find(user => user.Name == userName);
+                    Lives = userLivesUpd.Lives;
                 }
                 else if (userLives <= 0 && userMoney <= 0)
                 {
@@ -101,8 +108,8 @@ namespace HM
                     Console.WriteLine("Choose a difficulty level");
                     Console.WriteLine($"------");
                     Console.WriteLine("[Press 1] Easy - (win 6 USD)");
-                    Console.WriteLine("[Press 2]. Medium - (win 8 USD)");
-                    Console.WriteLine("[Press 3]. Hard - (win 10 USD)");
+                    Console.WriteLine("[Press 2] Medium - (win 8 USD)");
+                    Console.WriteLine("[Press 3] Hard - (win 10 USD)");
                     Console.Write("Choose: ");
 
                     if (!int.TryParse(Console.ReadLine(), out level))
@@ -144,8 +151,6 @@ namespace HM
                     bet = 0;
                 }
 
-                int Lives = userLives;
-                int Money = userMoney;
                 string levelString;
                 int levelPoints;
                 if (level == 1)
@@ -168,7 +173,7 @@ namespace HM
                 Console.WriteLine($"----------------------");
                 Console.WriteLine("THE GAME HAS STARTED!");
                 Console.WriteLine($"----------------------");
-                Console.WriteLine($"Player: {userName}, Level: {levelString}, Money: {userMoney} - You have bet {bet} USD ");
+                Console.WriteLine($"Player: {userName}, Level: {levelString}, Money: {updUser.Money} - You have bet {bet} USD ");
                 Console.WriteLine($"");
                 Console.WriteLine("Enter your first guess.");
                 Console.WriteLine($"");
@@ -176,7 +181,9 @@ namespace HM
                 Console.WriteLine($"");
 
                 DrawLives(Lives);
-                Console.WriteLine($"Lives: {Lives}");
+                Console.Write($"Lives: {Lives} ");
+                LivesAsHeart(Lives);
+                Console.WriteLine($"");
                 Console.WriteLine($"");
 
 
@@ -201,7 +208,12 @@ namespace HM
                                 Console.WriteLine($"----------------------");
                                 Console.WriteLine($"You have aldready guessed '{let1.ToUpper()}'. Guess again. ");
                                 Console.WriteLine($"----------------------");
-                                ShowCurrentGameStatus(currentState);
+
+                                ShowCurrentGameStatus(currentState, Lives);
+                                Console.Write($"Lives: {Lives} ");
+                                LivesAsHeart(Lives);
+                                Console.WriteLine($"");
+                                Console.WriteLine($"");
 
                             }
                             else
@@ -220,7 +232,9 @@ namespace HM
 
                                 //Show amount of lives left to user
                                 DrawLives(Lives);
-                                Console.WriteLine($"Lives: {Lives}");
+                                Console.Write($"Lives: {Lives} ");
+                                LivesAsHeart(Lives);
+                                Console.WriteLine($"");
                                 Console.WriteLine($"");
                             }
                         }
@@ -230,7 +244,12 @@ namespace HM
                             Console.WriteLine($"----------------------");
                             Console.WriteLine("Please enter a valid single letter.");
                             Console.WriteLine($"----------------------");
-                            ShowCurrentGameStatus(currentState);
+
+                            ShowCurrentGameStatus(currentState, Lives);
+                            Console.Write($"Lives: {Lives} ");
+                            LivesAsHeart(Lives);
+                            Console.WriteLine($"");
+                            Console.WriteLine($"");
                         }
                     }
                     else
@@ -267,9 +286,10 @@ namespace HM
                         currentUser_update.Money += levelPoints;
                         SaveUsers(users);
                         Console.WriteLine($"Winnings:");
-                        Console.WriteLine($"For level {levelString}: {levelPoints} USD.");
+                        Console.WriteLine($"For level '{levelString}': {levelPoints} USD.");
                         Console.WriteLine($"Bettings: {bet} USD.");
                         Console.WriteLine($"Total winnings: {bet + levelPoints}");
+                        Console.WriteLine($"");
                         Console.WriteLine($"Player: {currentUser_update.Name}");
                         Console.WriteLine($"Money: {currentUser_update.Money} USD");
                         Console.WriteLine($"Lives: {new_Lives}");
@@ -550,7 +570,9 @@ namespace HM
                         }
                         else
                         {
-                            Console.Write($"Are you sure you want to buy {newLives} lives for {newLives} USD? Y/N: ");
+                            Console.WriteLine($"Are you sure you want to buy {newLives} lives for {newLives} USD? ");
+                            Console.WriteLine($"You're new balance will be {currentUser.Money - newLives} USD?");
+                            Console.Write($"Y/N: ");
                             string? choice = Console.ReadLine();
 
                             if (!String.IsNullOrEmpty(choice) && (choice == "y" || choice == "Y"))
@@ -662,10 +684,9 @@ namespace HM
 
                 // Add a line break after printing the guessed words
                 Console.Clear();
-                Console.WriteLine($"");
                 Console.WriteLine($"-------------------------------------");
-                Console.WriteLine($"YES!!! The letter '{let1.ToUpper()}' is correct!");
-
+                Console.WriteLine($"CORRECT! The letter '{let1.ToUpper()}' is in the word!");
+                Console.WriteLine($"-------------------------------------");
                 guessesLetter.Add(let1);
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
 
@@ -705,9 +726,9 @@ namespace HM
             static void wrongGuess(string let1, ref string currentState)
             {
                 Console.Clear();
-                Console.WriteLine($"");
                 Console.WriteLine($"-------------------------------------");
-                Console.WriteLine($"NO!!! The letter '{let1.ToUpper()}' is not correct!");
+                Console.WriteLine($"WRONG! The letter '{let1.ToUpper()}' is not in the word");
+                Console.WriteLine($"-------------------------------------");
                 // var guessesLetter = new List<string>();
                 guessesLetter.Add(let1);
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
@@ -739,10 +760,12 @@ namespace HM
                     Console.WriteLine($"----------------------");
                     Console.WriteLine($"GAME OVER!");
                     Console.WriteLine($"----------------------");
+                    // Thread.Sleep(2000);
                     DrawLives(Lives);
 
                     if (currentUser.Money == 0)
                     {
+
                         oneLastChance(userName, userMoney);
 
                     }
@@ -771,7 +794,9 @@ namespace HM
                         }
                         else
                         {
-                            Console.Write($"Are you sure you want to buy {newLives} lives for {newLives} USD? Y/N: ");
+                            Console.WriteLine($"Are you sure you want to buy {newLives} lives for {newLives} USD? ");
+                            Console.WriteLine($"You're new balance will be {currentUser.Money - newLives} USD?");
+                            Console.Write($"Y/N: ");
                             string? choice = Console.ReadLine();
 
                             if (!String.IsNullOrEmpty(choice) && (choice == "y" || choice == "Y"))
@@ -826,8 +851,7 @@ namespace HM
                         Console.WriteLine($"Lives: {currentUser_.Lives}");
                         Console.WriteLine($"----------------------");
                         Console.Write($"Press enter to exit.");
-                        Console.ReadLine();
-                        Environment.Exit(0);
+                        ExitApp();
                         break;
 
                     }
@@ -836,7 +860,7 @@ namespace HM
 
 
 
-            static void ShowCurrentGameStatus(string currentState)
+            static void ShowCurrentGameStatus(string currentState, int Lives)
             {
 
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
@@ -853,6 +877,7 @@ namespace HM
                 Console.WriteLine($"");
                 Console.WriteLine(currentState.ToUpper());
                 Console.WriteLine($"");
+                DrawLives(Lives);
 
             }
 
@@ -862,6 +887,8 @@ namespace HM
             static void GetMoreLives(string currentState, int Lives)
             {
                 Console.Clear();
+                Console.WriteLine($"-------------------------------------");
+                Console.WriteLine($"LET'S GO!");
                 Console.WriteLine($"-------------------------------------");
 
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
@@ -880,7 +907,9 @@ namespace HM
                 Console.WriteLine($"");
 
                 DrawLives(Lives);
-                Console.WriteLine($"Lives: {Lives}");
+                Console.Write($"Lives: {Lives} ");
+                LivesAsHeart(Lives);
+                Console.WriteLine($"");
                 Console.WriteLine($"");
 
             }
@@ -933,9 +962,69 @@ namespace HM
             {
                 switch (Lives)
                 {
+                    case 10:
+                        Console.WriteLine("   ");
+                        Console.WriteLine("                ");
+                        Console.WriteLine("         ");
+                        Console.WriteLine("   ");
+                        Console.WriteLine("   ");
+                        Console.WriteLine("   ");
+                        Console.WriteLine("   ");
+                        Console.WriteLine("   ");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+
+                    case 9:
+                        Console.WriteLine("   ");
+                        Console.WriteLine("                ");
+                        Console.WriteLine("         ");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+
+                    case 8:
+                        Console.WriteLine("   ");
+                        Console.WriteLine("   |              ");
+                        Console.WriteLine("   |        ");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+
+                    case 7:
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |  /              ");
+                        Console.WriteLine("   | /        ");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+
+                    case 6:
+                        Console.WriteLine("   |-------------------");
+                        Console.WriteLine("   |  /              ");
+                        Console.WriteLine("   | /        ");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("   |");
+                        Console.WriteLine("----------------------------       ");
+                        break;
+
                     case 5:
-                        Console.WriteLine("   -------------------");
-                        Console.WriteLine("   |  /              |");
+                        Console.WriteLine("   |-------------------");
+                        Console.WriteLine("   |  /               |");
                         Console.WriteLine("   | /        ");
                         Console.WriteLine("   |");
                         Console.WriteLine("   |");
@@ -946,9 +1035,9 @@ namespace HM
                         break;
 
                     case 4:
-                        Console.WriteLine("   -------------------");
-                        Console.WriteLine("   |  /              |");
-                        Console.WriteLine("   | /              ('')");
+                        Console.WriteLine("   |-------------------");
+                        Console.WriteLine("   |  /               |");
+                        Console.WriteLine("   | /               ('')");
                         Console.WriteLine("   |");
                         Console.WriteLine("   |");
                         Console.WriteLine("   |");
@@ -958,7 +1047,7 @@ namespace HM
                         break;
 
                     case 3:
-                        Console.WriteLine("   -------------------");
+                        Console.WriteLine("   |-------------------");
                         Console.WriteLine("   |  /               |");
                         Console.WriteLine("   | /               ('')");
                         Console.WriteLine("   |                 /|| ");
@@ -970,48 +1059,49 @@ namespace HM
                         break;
 
                     case 2:
-                        Console.WriteLine("   -------------------");
-                        Console.WriteLine("   |  /              |");
-                        Console.WriteLine("   | /              ('')");
-                        Console.WriteLine("   |                /|| ");
-                        Console.WriteLine("   |                 ||");
-                        Console.WriteLine("   |                /   ");
+                        Console.WriteLine("   |-------------------");
+                        Console.WriteLine("   |  /               |");
+                        Console.WriteLine("   | /               ('')");
+                        Console.WriteLine("   |                 /|| ");
+                        Console.WriteLine("   |                  ||");
+                        Console.WriteLine("   |                 /   ");
                         Console.WriteLine("   |");
                         Console.WriteLine("   |");
                         Console.WriteLine("----------------------------       ");
                         break;
                     case 1:
-                        Console.WriteLine("   -------------------      __________________                     ");
-                        Console.WriteLine("   |  /              |      |                |   ");
-                        Console.WriteLine("   | /              (**) ---|  LAST CHANCE!  |   ");
-                        Console.WriteLine("   |                /||     |________________|   ");
-                        Console.WriteLine("   |                 ||              ");
-                        Console.WriteLine("   |                / ");
+                        Console.WriteLine("   |-------------------                           ");
+                        Console.WriteLine("   |  /               |      |--------------|   ");
+                        Console.WriteLine("   | /               (**) ---| LAST CHANCE! |   ");
+                        Console.WriteLine("   |                 /||     |______________|   ");
+                        Console.WriteLine("   |                  ||              ");
+                        Console.WriteLine("   |                 / ");
                         Console.WriteLine("   |");
                         Console.WriteLine("   |");
                         Console.WriteLine("----------------------------       ");
                         break;
                     case 0:
-                        Console.WriteLine("   -------------------");
-                        Console.WriteLine("   |  /              |   ");
-                        Console.WriteLine("   | /               |   ");
-                        Console.WriteLine("   |                 |  ");
-                        Console.WriteLine("   |                (--) ");
-                        Console.WriteLine("   |                /||   ");
-                        Console.WriteLine("   |                 ||      ");
-                        Console.WriteLine("   |                 /           ");
+                        Console.WriteLine("   |-------------------");
+                        Console.WriteLine("   |  /               |   ");
+                        Console.WriteLine("   | /                |   ");
+                        Console.WriteLine("   |                  |  ");
+                        Console.WriteLine("   |                 (--) ");
+                        Console.WriteLine("   |                 /||   ");
+                        Console.WriteLine("   |                  ||      ");
+                        Console.WriteLine("   |                  /           ");
                         Console.WriteLine("----------------------------       ");
+
                         break;
 
                     default:
-                        Console.WriteLine("   -------------------");
-                        Console.WriteLine("   |  /   ");
-                        Console.WriteLine("   | /   ");
-                        Console.WriteLine("   |    ");
-                        Console.WriteLine("   |  ");
-                        Console.WriteLine("   | ");
-                        Console.WriteLine("   | ");
-                        Console.WriteLine("   |   ");
+                        Console.WriteLine("   ");
+                        Console.WriteLine("      ");
+                        Console.WriteLine("      ");
+                        Console.WriteLine("       ");
+                        Console.WriteLine("     ");
+                        Console.WriteLine("    ");
+                        Console.WriteLine("    ");
+                        Console.WriteLine("      ");
                         Console.WriteLine("----------------------------       ");
                         break;
                 }
@@ -1278,7 +1368,6 @@ namespace HM
                             Console.Write(letter);
                             Thread.Sleep(20);
                         }
-                        Console.WriteLine("");
                         Console.ReadLine();
                         foreach (char letter in sentence_NO)
                         {
@@ -1344,11 +1433,13 @@ namespace HM
                         string sentence1 = $"Instructor: 'Hi {name}'";
                         string sentence2 = $"Instructor: 'Welcome to the Hangman game'";
                         string sentence3 = $"Instructor: 'As you might know, there is a Hangman in town'";
-                        string sentence4 = $"Instructor: 'And he ain't a nice guy. Last week I played riddles with my life with him'";
+                        string sentence4 = $"Instructor: 'And he ain't a nice guy. Last week I played riddles with my life on the line with him'";
                         string sentence5 = $"Instructor: 'Luckily, the riddle was fairly easy, and here I am. Still alive. Thank God'";
-                        string sentence6 = $"Instructor: 'Well anyway. I want to wish you good luck. And make sure to always have lives or money to buy lives with...'";
-                        string sentence7 = $"Instructor: 'Are you ready?'";
-                        string sentence8 = $"Instructor: 'Off you go then. Good luck!'";
+                        string sentence6 = $"Instructor: 'Well anyway. I want to wish you good luck.'";
+                        string sentence7 = $"Instructor: '...Oh. I almost forgot'";
+                        string sentence8 = $"Instructor: 'You're going to need this...'";
+                        string sentence9 = $"Instructor: 'Ok now. Are you ready?'";
+                        string sentence10 = $"Instructor: 'Off you go then. Good luck now!'";
 
                         foreach (char letter in sentence1)
                         {
@@ -1397,7 +1488,22 @@ namespace HM
                             Console.Write(letter);
                             Thread.Sleep(20);
                         }
+                        Console.ReadLine();
+                        Console.WriteLine("");
+                        Console.WriteLine("Instructor has given you 20 USD and 7 Lives");
 
+                        Console.ReadLine();
+                        foreach (char letter in sentence9)
+                        {
+                            Console.Write(letter);
+                            Thread.Sleep(20);
+                        }
+                        Console.ReadLine();
+                        foreach (char letter in sentence10)
+                        {
+                            Console.Write(letter);
+                            Thread.Sleep(20);
+                        }
                         Console.ReadLine();
                         Console.ResetColor();
                         return name;
@@ -1511,6 +1617,15 @@ namespace HM
                 }
             }
 
+
+            static void LivesAsHeart(int amount)
+            {
+
+                for (int i = 0; i < amount; i++)
+                {
+                    Console.Write("❤ ");
+                }
+            }
         }
     }
 }
