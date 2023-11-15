@@ -92,8 +92,37 @@ namespace HM
                     oneLastChance(userName, userMoney);
                 }
 
+
+
+                int level;
+
+                while (true)
+                {
+                    Console.WriteLine("Choose a difficulty level");
+                    Console.WriteLine("Press 1. Easy");
+                    Console.WriteLine("Press 2. Medium");
+                    Console.WriteLine("Press 3. Hard");
+                    Console.Write("Choose: ");
+
+                    if (!int.TryParse(Console.ReadLine(), out level))
+                    {
+                        Console.WriteLine("Invalid input. Please enter a number.");
+                        continue;
+                    }
+
+                    if (level < 1 || level > 3)
+                    {
+                        Console.WriteLine("Invalid difficulty level. Please choose 1 (easy), 2 (medium), or 3 (hard).");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+
                 //Load word 
-                string theWord = LoadHangmanWord().ToLower();
+                string theWord = LoadHangmanWord(level).ToLower();
                 //convert loaded word to underscored string
                 string currentState = new string('_', theWord.Length);
 
@@ -379,7 +408,12 @@ namespace HM
             static void SelectedPlayer(int index)
             {
                 // Console.Clear();
-                Console.WriteLine($"You selected: {users[index].Name}");
+                Console.WriteLine($"-------------------------------");
+                Console.WriteLine($"Player: {users[index].Name}");
+                Console.WriteLine($"Money: {users[index].Money}");
+                Console.WriteLine($"Lives: {users[index].Lives}");
+                Console.WriteLine($"");
+
 
                 // Directly modify the user's data
                 User selectedUser = users[index];
@@ -404,33 +438,8 @@ namespace HM
 
 
             //Loads hangmanword from json-file
-            static string LoadHangmanWord()
+            static string LoadHangmanWord(int level)
             {
-                int level;
-
-                while (true)
-                {
-                    Console.WriteLine("Choose a difficulty level");
-                    Console.WriteLine("Press 1. Easy");
-                    Console.WriteLine("Press 2. Medium");
-                    Console.WriteLine("Press 3. Hard");
-                    Console.Write("Choose: ");
-
-                    if (!int.TryParse(Console.ReadLine(), out level))
-                    {
-                        Console.WriteLine("Invalid input. Please enter a number.");
-                        continue;
-                    }
-
-                    if (level < 1 || level > 3)
-                    {
-                        Console.WriteLine("Invalid difficulty level. Please choose 1 (easy), 2 (medium), or 3 (hard).");
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
 
                 if (File.Exists(FilePathWord))
                 {

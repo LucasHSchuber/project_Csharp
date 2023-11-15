@@ -6,12 +6,22 @@
   },
   {
     "Name": "Lucas",
-    "Money": 20,
-    "Lives": 1
+    "Money": 40,
+    "Lives": 5
   },
   {
     "Name": "esgf",
     "Money": 0,
     "Lives": 10
+  },
+  {
+    "Name": "Kajsa",
+    "Money": 20,
+    "Lives": 7
+  },
+  {
+    "Name": "afsadfsdf",
+    "Money": 20,
+    "Lives": 7
   }
 ]
