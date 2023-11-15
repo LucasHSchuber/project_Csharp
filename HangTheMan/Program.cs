@@ -15,9 +15,14 @@ namespace HM
 
         public static List<wordBank> words = new List<wordBank>();
         public static List<User> users = new List<User>();
+
+        public static List<Riddle> riddles = new List<Riddle>();
+
         static List<string> guessesLetter = new List<string>(); // Move the list declaration outside the method
         const string FilePathWord = "json/hangmanwordbank.json"; //filename for storing words
         const string FilePathUsers = "json/users.json"; //filename for storing users
+        const string FilePathRiddle = "json/riddles.json"; //filename for storing words
+
 
         static void Main(string[] args)
         {
@@ -918,8 +923,15 @@ namespace HM
             //The very last change
             static void oneLastChance(string userName, int userMoney)
             {
+                //getting a random riddle from method
+                Riddle riddle = GetRandomRiddle();
+                //question = riddle.Question
+                //answer = riddle.Answer
+                //keyord = riddle.Keyword
+
+                Console.Clear();
                 Console.WriteLine($"You have no money or lives left!");
-                Console.WriteLine("˙◠˙");
+                Console.WriteLine("");
                 Thread.Sleep(2000);
 
                 Console.WriteLine("");
@@ -958,76 +970,197 @@ namespace HM
                 Thread.Sleep(2000);
 
                 string sentence1 = $"Hangman: 'Hello {userName}'. ";
-                string sentence2 = "Hangman: 'I can see you have neither any money or lives left HAHAHA'.";
+                string sentence2 = "Hangman: 'I can see you have neither any money or lives left HAHAHA'";
                 string sentence3 = "Hangman: 'Well, luckily for you I'm in a good mode today...'";
-                string sentence4 = "Hangman: 'and I'm willing to offer you a chance to stay a live a little longer'.";
+                string sentence4 = "Hangman: 'and I'm willing to offer you a chance to stay a live a little longer'";
                 string sentence5 = "Hangman: 'Are you interested? Y/N:'";
-                string sentence_YES = "Hangman: 'Ok then..'.";
-                string sentence_NO = $"Hangman: 'HAHAHAHAHA ok then good bye {userName}, maybe I'll see you on the other side.'.";
-                string sentence_NO2 = "Hangman: 'HAHAHAHAHAHAHHAHAHHAAHAHAHAHAHAHAHAHAHAHA'.";
+
+                string answer_NO = $"{userName}: 'Actually... No...'.";
+                string sentence_NO = $"Hangman: 'HAHAHAHAHA ok then good bye {userName}, maybe I'll see you on the other side'";
+                string sentence_NO2 = "Hangman: 'HAHAHAHAHAHAHHAHAHHAAHAHAHAHAHAHAHAHAHAHA'";
+
+                string answer_YES = $"{userName}: 'Of course I'm interested to stay alive'";
+                string sentence_YES = "Hangman: 'Ok then...'";
+                string sentence_YES2 = "Hangman: 'If you can guess my riddle, I will give you... 10 new lives'";
+                string sentence_YES3 = "Hangman: 'Get ready! Here comes the riddle.'";
+                string sentence_YES4 = $"Hangman: '{riddle.Question}'";
+
+                string sentence_YES_correct1 = $"Hangman: '.... I'm impressed'";
+                string sentence_YES_correct2 = $"Hangman: 'Well... I guess I have to keep my word now. Or do I...?'";
+                string sentence_YES_correct3 = $"Hangman: 'Here are 10 new lives'";
+                string sentence_YES_correct4 = $"Hangman: 'See you soon {userName}...'";
+
+                string sentence_YES_wrong1 = $"Hangman: 'Ops... That's wrong HAHAHAHA'";
+                string sentence_YES_wrong2 = $"Hangman: 'The answer is {riddle.Answer}!'";
+                string sentence_YES_wrong3 = $"Hangman: 'You're out of the game. Bye bye {userName}!'";
+
+
+
+
 
 
                 foreach (char letter in sentence1)
                 {
                     Console.Write(letter);
-                    Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                    Thread.Sleep(30);
                 }
                 Console.ReadLine();
 
                 foreach (char letter in sentence2)
                 {
                     Console.Write(letter);
-                    Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                    Thread.Sleep(30);
                 }
                 Console.ReadLine();
 
                 foreach (char letter in sentence3)
                 {
                     Console.Write(letter);
-                    Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                    Thread.Sleep(30);
                 }
                 Console.WriteLine("");
                 foreach (char letter in sentence4)
                 {
                     Console.Write(letter);
-                    Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                    Thread.Sleep(30);
                 }
                 Console.ReadLine();
                 foreach (char letter in sentence5)
                 {
                     Console.Write(letter);
-                    Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                    Thread.Sleep(30);
                 }
                 string? answer = Console.ReadLine();
 
                 //if chance is taken
                 if (!String.IsNullOrEmpty(answer) && (answer == "Y" || answer == "y"))
                 {
+                    foreach (char letter in answer_YES)
+                    {
+                        Console.Write(letter);
+                        Thread.Sleep(30);
+                    }
+                    // Console.WriteLine("");
+                    Console.ReadLine();
                     foreach (char letter in sentence_YES)
                     {
                         Console.Write(letter);
-                        Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                        Thread.Sleep(30);
+                    }
+                    Console.ReadLine();
+                    foreach (char letter in sentence_YES2)
+                    {
+                        Console.Write(letter);
+                        Thread.Sleep(30);
+                    }
+                    Console.ReadLine();
+                    foreach (char letter in sentence_YES3)
+                    {
+                        Console.Write(letter);
+                        Thread.Sleep(30);
+                    }
+                    Console.ReadLine();
+                    foreach (char letter in sentence_YES4)
+                    {
+                        Console.Write(letter);
+                        Thread.Sleep(30);
                     }
 
+                    Console.Write($"{userName}: ");
+                    string? answer_riddle = Console.ReadLine();
+
+                    if (!String.IsNullOrEmpty(answer_riddle) && answer_riddle.Contains(riddle.Keyword, StringComparison.OrdinalIgnoreCase))
+                    {
 
 
+                        foreach (char letter in sentence_YES_correct1)
+                        {
+                            Console.Write(letter);
+                            Thread.Sleep(30);
+                        }
+                        Console.ReadLine();
+                        foreach (char letter in sentence_YES_correct2)
+                        {
+                            Console.Write(letter);
+                            Thread.Sleep(30);
+                        }
+                        Console.ReadLine();
+                        foreach (char letter in sentence_YES_correct3)
+                        {
+                            Console.Write(letter);
+                            Thread.Sleep(30);
+                        }
+
+                        //gives user 10 more lives
+                        Console.WriteLine("");
+                        Console.WriteLine("");
+                        Console.WriteLine("Lives: 10");
+
+                        List<User> users = LoadUsers(); // Load existing users
+                        User user = users.Find(user => user.Name == userName);
+
+                        if (user != null)
+                        {
+                            user.Lives = 10;
+                            SaveUsers(users);
+                        }
 
 
+                        Console.ReadLine();
+                        foreach (char letter in sentence_YES_correct4)
+                        {
+                            Console.Write(letter);
+                            Thread.Sleep(30);
+                        }
+                        Console.ReadLine();
 
+                        Environment.Exit(0); //exit game
 
+                    }
+                    else
+                    {
+
+                        foreach (char letter in sentence_YES_wrong1)
+                        {
+                            Console.Write(letter);
+                            Thread.Sleep(30);
+                        }
+                        Console.ReadLine();
+                        foreach (char letter in sentence_YES_wrong2)
+                        {
+                            Console.Write(letter);
+                            Thread.Sleep(30);
+                        }
+                        Console.ReadLine();
+                        foreach (char letter in sentence_YES_wrong3)
+                        {
+                            Console.Write(letter);
+                            Thread.Sleep(30);
+                        }
+
+                        removeUser(userName);
+
+                    }
                 }
                 else if (!String.IsNullOrEmpty(answer) && (answer == "N" || answer == "n"))
                 {
+                    foreach (char letter in answer_NO)
+                    {
+                        Console.Write(letter);
+                        Thread.Sleep(30);
+                    }
+                    Console.WriteLine("");
+                    Console.ReadLine();
                     foreach (char letter in sentence_NO)
                     {
                         Console.Write(letter);
-                        Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                        Thread.Sleep(30);
                     }
                     Console.WriteLine("");
                     foreach (char letter in sentence_NO2)
                     {
                         Console.Write(letter);
-                        Thread.Sleep(30); // Adjust the sleep duration according to your preference
+                        Thread.Sleep(30);
                     }
                     Thread.Sleep(1000);
                     Console.WriteLine();
@@ -1056,18 +1189,49 @@ namespace HM
 
                     if (!string.IsNullOrEmpty(name))
                     {
-                        Console.WriteLine($"Ok. Great {name}. Let's begin.");
                         Thread.Sleep(1000);
-
+                        Console.WriteLine($"Ok great. Let's begin.");
+                        Thread.Sleep(2000);
+                        Console.BackgroundColor = ConsoleColor.DarkGray;
                         Console.Clear();
+                        Thread.Sleep(2000);
 
-                        sentence1 = $"";
-                        sentence2 = $"";
-                        sentence3 = $"";
-                        sentence4 = $"";
-                        sentence5 = $"";
-                        sentence6 = $"";
+                        Console.WriteLine("");
+                        Console.WriteLine("");
+                        Console.WriteLine("");
+                        Console.WriteLine("   ,,,,,");
+                        Console.WriteLine("  |     |");
+                        Console.WriteLine("  |-O-O-|");
+                        Console.WriteLine(" (|  ^  |)");
+                        Console.WriteLine("  | --- |");
+                        Console.WriteLine("   \\___/");
+                        Console.WriteLine("   |   |");
+                        Console.WriteLine("");
+                        Console.WriteLine("");
+                        Thread.Sleep(1000);
+                        string sentence1 = $"Instructor: 'Hi {name}'. ";
+                        string sentence2 = $"Instructor: 'Welcome to the Hangman game'.";
+                        string sentence3 = $"Instructor: 'As you might know by now, there is a Hangman in town.'.";
+                        string sentence4 = $"Instructor: 'And let me tell you, he ain't a nice guy. The other week I played riddles with my life with him.'.";
+                        string sentence5 = $"Instructor: 'Luckily, the riddle was fairly easy, and here I am. Still alive. Thank God.'.";
+                        string sentence6 = $"Instructor: 'Well anyway.'.";
+                        string sentence7 = $"Instructor: 'Well anyway.'.";
 
+                        string sentence8 = $"Instructor: 'Off you go.'.";
+
+                        foreach (char letter in sentence1)
+                        {
+                            Console.Write(letter);
+                            Thread.Sleep(30);
+                        }
+                        Thread.Sleep(500);
+                        foreach (char letter in sentence2)
+                        {
+                            Console.Write(letter);
+                            Thread.Sleep(30);
+                        }
+
+                        Console.ResetColor();
                         return name;
                         break;
 
@@ -1128,6 +1292,7 @@ namespace HM
 
             }
 
+
             static void ExitApp()
             {
                 Console.WriteLine("");
@@ -1141,6 +1306,38 @@ namespace HM
                 Thread.Sleep(100);
                 Console.WriteLine("Good Bye!");
                 Environment.Exit(0);
+            }
+
+
+
+
+            //Loads alla riddles in users LIST - User
+            static List<Riddle> LoadRiddles()
+            {
+                if (File.Exists(FilePathRiddle))
+                {
+                    string json = File.ReadAllText(FilePathRiddle);
+                    return JsonConvert.DeserializeObject<List<Riddle>>(json) ?? new List<Riddle>();
+                }
+                else
+                {
+                    return new List<Riddle>();
+                }
+            }
+            static Riddle GetRandomRiddle()
+            {
+                List<Riddle> riddles = LoadRiddles();
+                if (riddles.Count > 0)
+                {
+                    Random random = new Random();
+                    int randomIndex = random.Next(0, riddles.Count);
+                    return riddles[randomIndex];
+                }
+                else
+                {
+                    Console.WriteLine("No riddles available.");
+                    return null;
+                }
             }
 
         }
