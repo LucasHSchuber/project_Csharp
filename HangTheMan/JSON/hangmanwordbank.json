@@ -1,1 +1,41 @@
-[{"Word":"Hangman"},{"Word":"Sunset"},{"Word":"Sunrise"}]
+[
+    {
+        "Word": "Hangman"
+    },
+    {
+        "Word": "Sunset"
+    },
+    {
+        "Word": "Sunrise"
+    },
+    {
+        "Word": "Television"
+    },
+    {
+        "Word": "Chair"
+    },
+    {
+        "Word": "Amen"
+    },
+    {
+        "Word": "Weekend"
+    },
+    {
+        "Word": "Axe"
+    },
+    {
+        "Word": "Paradise"
+    },
+    {
+        "Word": "Polygraph"
+    },
+    {
+        "Word": "Zenith"
+    },
+    {
+        "Word": "Zebra"
+    },
+    {
+        "Word": "Style"
+    }
+]

@@ -83,28 +83,15 @@ namespace HM
 
                 List<User> users = LoadUsers();
 
-                if (userLives == 0 && userMoney > 0)
+                if (userLives <= 0 && userMoney > 0)
                 {
                     StartGameWithZeroLives(userName, userLives, userMoney);
                 }
-                else if (userLives == 0 && userMoney == 0)
+                else if (userLives <= 0 && userMoney <= 0)
                 {
                     oneLastChance(userName, userMoney);
                 }
 
-                int bet;
-                if (userMoney > 0)
-                {
-                    bet = Bets(userName);
-                }
-                else
-                {
-                    bet = 0;
-                }
-
-
-                //START APP WITH CONSOLE CLEAR 
-                Console.Clear();
                 //Load word 
                 string theWord = LoadHangmanWord().ToLower();
                 //convert loaded word to underscored string
@@ -113,9 +100,24 @@ namespace HM
                 char[] guessesLetterArray = new char[theWord.Length]; // Reset the guessed letters array
                 Array.Fill(guessesLetterArray, '_'); // Fill the array with underscores
 
+
+                users = LoadUsers();
+                User updUser = users.Find(user => user.Name == userName);
+
+                int bet;
+                if (updUser.Money != null && updUser.Money > 0)
+                {
+                    bet = Bets(userName);
+                }
+                else
+                {
+                    bet = 0;
+                }
+
                 int Lives = userLives;
                 int Money = userMoney;
 
+                Console.Clear();
                 Console.WriteLine($"----------------------");
                 Console.WriteLine("THE GAME HAS STARTED!");
                 Console.WriteLine($"----------------------");
@@ -230,7 +232,7 @@ namespace HM
 
                         break;
                     }
-                    else if (Lives == 0)
+                    else if (Lives <= 0)
                     {
                         List<User> users_ = LoadUsers(); // Load existing users
                         User user = users_.Find(user => user.Name == userName);
@@ -279,7 +281,6 @@ namespace HM
 
                 string name = NewPlayerStoryIntro();
 
-
                 if (!string.IsNullOrEmpty(name))
                 {
                     List<User> allUsers = LoadUsers(); // Load existing users
@@ -291,18 +292,20 @@ namespace HM
 
                     Console.Clear();
                     Console.WriteLine("------------------------------------------------");
-                    // Console.WriteLine($"Your user '{name}' is created!");
                     Console.WriteLine($"You have been given {StarMoney} USD and {StartLives} lives to start with. ");
                     Console.WriteLine($"");
                     Console.WriteLine($"Name: {name}");
                     Console.WriteLine($"Money: {StarMoney} USD");
                     Console.WriteLine($"Lives: {StartLives}");
 
-                    // List<User> users = LoadUsers(); // Load list after saving
+
                     users = LoadUsers(); // Load the updated list into the global variable
 
                     int index = users.FindIndex(user => user.Name == name);
                     Console.WriteLine("");
+                    Console.Write("Press enter to continue ");
+                    Console.ReadLine();
+                    Console.Clear();
 
                     SelectedPlayer(index);
                 }
@@ -310,8 +313,6 @@ namespace HM
                 {
                     Console.WriteLine("Invalid input. Please enter a valid name.");
                 }
-
-
             }
 
 
@@ -369,6 +370,7 @@ namespace HM
                 }
                 else if (int.TryParse(choice, out int index) && index <= users.Count)
                 {
+                    Console.Clear();
                     SelectedPlayer(index -= 1); // Adjust the index to choose right player
                 }
             }
@@ -391,6 +393,7 @@ namespace HM
                 // Save the changes to the JSON file
                 SaveUsers(users);
 
+
                 PlayHangman(Name, Lives, Money);
             }
 
@@ -403,14 +406,67 @@ namespace HM
             //Loads hangmanword from json-file
             static string LoadHangmanWord()
             {
+                int level;
+
+                while (true)
+                {
+                    Console.WriteLine("Choose a difficulty level");
+                    Console.WriteLine("Press 1. Easy");
+                    Console.WriteLine("Press 2. Medium");
+                    Console.WriteLine("Press 3. Hard");
+                    Console.Write("Choose: ");
+
+                    if (!int.TryParse(Console.ReadLine(), out level))
+                    {
+                        Console.WriteLine("Invalid input. Please enter a number.");
+                        continue;
+                    }
+
+                    if (level < 1 || level > 3)
+                    {
+                        Console.WriteLine("Invalid difficulty level. Please choose 1 (easy), 2 (medium), or 3 (hard).");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
                 if (File.Exists(FilePathWord))
                 {
                     List<wordBank> words = LoadWords();
                     Random r = new Random();
+                    List<wordBank> filteredWords;
 
-                    if (words.Count > 0)
+                    if (level == 1) // Easy
                     {
-                        string randomWord = words[r.Next(0, words.Count)].Word;
+                        filteredWords = words
+                            .Where(w => !w.Word.Contains("z") && !w.Word.Contains("y") && !w.Word.Contains("x"))
+                            .Where(w => w.Word.Length <= 5)
+                            .ToList();
+                    }
+                    else if (level == 2) // Medium
+                    {
+                        filteredWords = words
+                            .Where(w => !w.Word.Contains("z") && !w.Word.Contains("y") && !w.Word.Contains("x"))
+                            .Where(w => w.Word.Length > 5 && w.Word.Length <= 7)
+                            .ToList();
+                    }
+                    else if (level == 3) // Hard
+                    {
+                        filteredWords = words
+                            .Where(w => w.Word.Length > 7 || (w.Word.Length > 4 && (w.Word.Contains("z") || w.Word.Contains("y") || w.Word.Contains("x") || w.Word.Contains("v") || w.Word.Contains("w"))))
+                            .ToList();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid difficulty level. Please choose 1 (easy), 2 (medium), or 3 (hard).");
+                        return null;
+                    }
+
+                    if (filteredWords.Count > 0)
+                    {
+                        string randomWord = filteredWords[r.Next(0, filteredWords.Count)].Word;
                         return randomWord;
                     }
                     else
@@ -422,6 +478,7 @@ namespace HM
                 {
                     Console.WriteLine("No words available.");
                 }
+
                 return null;
             }
 
@@ -436,8 +493,9 @@ namespace HM
 
                 while (true)
                 {
-
-                    Console.WriteLine($"Do you want to buy more lives and keep playing?");
+                    Console.Clear();
+                    Console.WriteLine($"You are out of lives. You need to buy more lives to play.");
+                    Console.WriteLine($"Do you want to buy more lives?");
                     Console.Write($"Y/N : ");
                     string? purchase = Console.ReadLine();
 
@@ -477,7 +535,7 @@ namespace HM
                                     currentUser.Money -= newLives;
                                     SaveUsers(users); // Save the changes to the JSON file
                                 }
-                                // break;
+                                break;
                             }
                             else if (!String.IsNullOrEmpty(choice) && (choice == "n" || choice == "N"))
                             {
@@ -734,7 +792,7 @@ namespace HM
                         Console.WriteLine($"Money: {currentUser_.Money} USD");
                         Console.WriteLine($"Lives: {currentUser_.Lives}");
                         Console.WriteLine($"----------------------");
-                        Console.WriteLine($"Press enter to exit.");
+                        Console.Write($"Press enter to exit.");
                         Console.ReadLine();
                         Environment.Exit(0);
                         break;
@@ -1017,33 +1075,33 @@ namespace HM
                 foreach (char letter in sentence1)
                 {
                     Console.Write(letter);
-                    Thread.Sleep(30);
+                    Thread.Sleep(20);
                 }
                 Console.ReadLine();
 
                 foreach (char letter in sentence2)
                 {
                     Console.Write(letter);
-                    Thread.Sleep(30);
+                    Thread.Sleep(20);
                 }
                 Console.ReadLine();
 
                 foreach (char letter in sentence3)
                 {
                     Console.Write(letter);
-                    Thread.Sleep(30);
+                    Thread.Sleep(20);
                 }
                 Console.WriteLine("");
                 foreach (char letter in sentence4)
                 {
                     Console.Write(letter);
-                    Thread.Sleep(30);
+                    Thread.Sleep(20);
                 }
                 Console.ReadLine();
                 foreach (char letter in sentence5)
                 {
                     Console.Write(letter);
-                    Thread.Sleep(30);
+                    Thread.Sleep(20);
                 }
 
                 while (true)
@@ -1056,32 +1114,32 @@ namespace HM
                         foreach (char letter in answer_YES)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         // Console.WriteLine("");
                         Console.ReadLine();
                         foreach (char letter in sentence_YES)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.ReadLine();
                         foreach (char letter in sentence_YES2)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.ReadLine();
                         foreach (char letter in sentence_YES3)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.ReadLine();
                         foreach (char letter in sentence_YES4)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.WriteLine("");
 
@@ -1098,19 +1156,19 @@ namespace HM
                                 foreach (char letter in sentence_YES_correct1)
                                 {
                                     Console.Write(letter);
-                                    Thread.Sleep(30);
+                                    Thread.Sleep(20);
                                 }
                                 Console.ReadLine();
                                 foreach (char letter in sentence_YES_correct2)
                                 {
                                     Console.Write(letter);
-                                    Thread.Sleep(30);
+                                    Thread.Sleep(20);
                                 }
                                 Console.ReadLine();
                                 foreach (char letter in sentence_YES_correct3)
                                 {
                                     Console.Write(letter);
-                                    Thread.Sleep(30);
+                                    Thread.Sleep(20);
                                 }
 
                                 //gives user 10 more lives
@@ -1132,11 +1190,12 @@ namespace HM
                                 foreach (char letter in sentence_YES_correct4)
                                 {
                                     Console.Write(letter);
-                                    Thread.Sleep(30);
+                                    Thread.Sleep(20);
                                 }
                                 Console.ReadLine();
-                                Console.Clear();
                                 Console.ResetColor();
+                                Console.Clear();
+
 
                                 // Reset guessesLetter List and guessesLetterArray
                                 guessesLetter.Clear();
@@ -1154,25 +1213,26 @@ namespace HM
                                 foreach (char letter in sentence_YES_wrong1)
                                 {
                                     Console.Write(letter);
-                                    Thread.Sleep(30);
+                                    Thread.Sleep(20);
                                 }
                                 Console.ReadLine();
                                 foreach (char letter in sentence_YES_wrong2)
                                 {
                                     Console.Write(letter);
-                                    Thread.Sleep(30);
+                                    Thread.Sleep(20);
                                 }
                                 Console.ReadLine();
                                 foreach (char letter in sentence_YES_wrong3)
                                 {
                                     Console.Write(letter);
-                                    Thread.Sleep(30);
+                                    Thread.Sleep(20);
                                 }
                                 Console.WriteLine("");
                                 removeUser(userName);
                                 Thread.Sleep(1000);
-                                Console.Clear();
                                 Console.ResetColor();
+                                Console.Clear();
+
                                 Environment.Exit(0);
 
                             }
@@ -1183,20 +1243,20 @@ namespace HM
                         foreach (char letter in answer_NO)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.WriteLine("");
                         Console.ReadLine();
                         foreach (char letter in sentence_NO)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.WriteLine("");
                         foreach (char letter in sentence_NO2)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Thread.Sleep(1000);
                         Console.WriteLine();
@@ -1235,7 +1295,7 @@ namespace HM
                         Thread.Sleep(2000);
                         Console.BackgroundColor = ConsoleColor.DarkGray;
                         Console.Clear();
-                        Thread.Sleep(2000);
+                        Thread.Sleep(1000);
 
                         Console.WriteLine("");
                         Console.WriteLine("   ,,,,,");
@@ -1247,6 +1307,7 @@ namespace HM
                         Console.WriteLine("   |   |");
                         Console.WriteLine("");
                         Thread.Sleep(1000);
+
                         string sentence1 = $"Instructor: 'Hi {name}'";
                         string sentence2 = $"Instructor: 'Welcome to the Hangman game'";
                         string sentence3 = $"Instructor: 'As you might know, there is a Hangman in town'";
@@ -1259,78 +1320,60 @@ namespace HM
                         foreach (char letter in sentence1)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.ReadLine();
                         foreach (char letter in sentence2)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.ReadLine();
                         foreach (char letter in sentence3)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.ReadLine();
                         foreach (char letter in sentence4)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.ReadLine();
                         foreach (char letter in sentence5)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.ReadLine();
                         foreach (char letter in sentence6)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.ReadLine();
                         foreach (char letter in sentence7)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
                         Console.ReadLine();
-
-                        Console.WriteLine("");
-                        Console.WriteLine("");
-                        Console.WriteLine("   ,,,,,");
-                        Console.WriteLine("  |     |");
-                        Console.WriteLine("  |-O-O-|");
-                        Console.WriteLine(" (|  ^  |)");
-                        Console.WriteLine("  | \\_/ |");
-                        Console.WriteLine("   \\___/");
-                        Console.WriteLine("   |   |");
-                        Console.WriteLine("");
-                        Console.WriteLine("");
-
-                        Thread.Sleep(500);
                         foreach (char letter in sentence8)
                         {
                             Console.Write(letter);
-                            Thread.Sleep(30);
+                            Thread.Sleep(20);
                         }
 
                         Console.ReadLine();
                         Console.ResetColor();
                         return name;
-                        break;
 
                     }
                     else
                     {
-
+                        Console.WriteLine("Invalid input.");
                     }
-
-                    return null;
-
                 }
 
             }
