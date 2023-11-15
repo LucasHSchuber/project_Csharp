@@ -37,7 +37,7 @@ namespace HM
                 Console.WriteLine($"");
                 Console.WriteLine($"--------------");
 
-                Console.Write("Request: ");
+                Console.Write("Choose: ");
                 string? choice = Console.ReadLine();
 
                 switch (choice)
@@ -216,7 +216,7 @@ namespace HM
                         Console.WriteLine($"Money: {currentUser_update.Money} USD");
                         Console.WriteLine($"Lives: {new_Lives}");
                         Console.WriteLine($"----------------------");
-                        Console.WriteLine($"Press enter to return to menu");
+                        Console.Write($"Press enter to return to menu");
                         Console.ReadLine();
                         // Reset guessesLetter List and guessesLetterArray
                         guessesLetter.Clear();
@@ -229,12 +229,6 @@ namespace HM
                     {
                         GameOver(theWord, currentState, ref Lives, bet, userName, userMoney);
 
-                        // Reset guessesLetter List and guessesLetterArray
-                        guessesLetter.Clear();
-                        guessesLetterArray = new char[theWord.Length];
-                        Array.Fill(guessesLetterArray, '_');
-
-                        break;
                     }
                 }
             }
@@ -248,8 +242,10 @@ namespace HM
             {
                 users = LoadUsers();
 
+                Console.Clear();
+                Console.WriteLine("-------------");
                 Console.WriteLine("PLAYERS:");
-                Console.WriteLine("---------");
+                Console.WriteLine("-------------");
                 int Number = 1;
                 foreach (var user in users)
                 {
@@ -258,7 +254,7 @@ namespace HM
                 }
 
                 Console.WriteLine("");
-                Console.WriteLine("Press enter to return to menu");
+                Console.Write("Press enter to return to menu");
                 Console.ReadLine();
 
             }
@@ -266,45 +262,44 @@ namespace HM
             //Add a new user when user presses 'N' at start
             static void AddNewUser()
             {
-                Console.Write("Enter your name: ");
-                string? name = Console.ReadLine();
 
-                while (true)
+                string name = NewPlayerStoryIntro();
+
+
+                if (!string.IsNullOrEmpty(name))
                 {
-                    if (!string.IsNullOrEmpty(name))
-                    {
-                        List<User> allUsers = LoadUsers(); // Load existing users
-                        int StarMoney = 20;
-                        int StartLives = 7;
-                        User newUser = new User(name, StarMoney, StartLives); // Create a new user (name,USD,lives)
-                        allUsers.Add(newUser); // Add the new user to the list
-                        SaveUsers(allUsers); // Save the updated list to the json file
+                    List<User> allUsers = LoadUsers(); // Load existing users
+                    int StarMoney = 20;
+                    int StartLives = 7;
+                    User newUser = new User(name, StarMoney, StartLives); // Create a new user (name,USD,lives)
+                    allUsers.Add(newUser); // Add the new user to the list toghether with the other players
+                    SaveUsers(allUsers); // Save the updated list to the json file
 
-                        Console.Clear();
-                        Console.WriteLine("------------------------------------------------");
-                        Console.WriteLine($"Your user '{name}' is created!");
-                        Console.WriteLine($"You have been given {StarMoney} USD and {StartLives} lives to start with. ");
-                        Console.WriteLine($"");
-                        Console.WriteLine($"Name: {name}");
-                        Console.WriteLine($"Money: {StarMoney} USD");
-                        Console.WriteLine($"Lives: {StartLives}");
+                    Console.Clear();
+                    Console.WriteLine("------------------------------------------------");
+                    Console.WriteLine($"Your user '{name}' is created!");
+                    Console.WriteLine($"You have been given {StarMoney} USD and {StartLives} lives to start with. ");
+                    Console.WriteLine($"");
+                    Console.WriteLine($"Name: {name}");
+                    Console.WriteLine($"Money: {StarMoney} USD");
+                    Console.WriteLine($"Lives: {StartLives}");
 
-                        // List<User> users = LoadUsers(); // Load list after saving
-                        users = LoadUsers(); // Load the updated list into the global variable
+                    // List<User> users = LoadUsers(); // Load list after saving
+                    users = LoadUsers(); // Load the updated list into the global variable
 
-                        int index = users.FindIndex(user => user.Name == name);
-                        Console.WriteLine($"Index: {index}");
-                        Console.WriteLine("");
+                    int index = users.FindIndex(user => user.Name == name);
+                    Console.WriteLine("");
 
-                        SelectedPlayer(index);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid input. Please enter a valid name.");
-                    }
-                    break;
+                    SelectedPlayer(index);
                 }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid name.");
+                }
+
+
             }
+
 
             //Loads alla users in users LIST - User
             static List<User> LoadUsers()
@@ -335,18 +330,22 @@ namespace HM
 
                 users = LoadUsers();
 
+                Console.Clear();
+                Console.WriteLine("-------------");
                 Console.WriteLine("PLAYERS:");
-                Console.WriteLine("---------");
+                Console.WriteLine("-------------");
+                //Displays all player in game
                 int Number = 1;
                 foreach (var user in users)
                 {
                     Console.WriteLine($"[{Number}] {user.Name} - Money:{user.Money}, Lives:{user.Lives}");
                     Number++; //Adding 1 to each message when printing them in console
                 }
-
                 Console.WriteLine("");
+                Console.WriteLine("['N'] - Create new player");
+                Console.WriteLine("");
+                Console.WriteLine("-------------");
                 Console.WriteLine("Select a player by entering the corresponding number");
-                Console.WriteLine("Or press 'N' to create a new player");
                 Console.Write("Choose: ");
                 string? choice = Console.ReadLine();
 
@@ -464,8 +463,7 @@ namespace HM
                                     currentUser.Money -= newLives;
                                     SaveUsers(users); // Save the changes to the JSON file
                                 }
-
-                                break;
+                                // break;
                             }
                             else if (!String.IsNullOrEmpty(choice) && (choice == "n" || choice == "N"))
                             {
@@ -539,7 +537,7 @@ namespace HM
                         existingWords.Add(word);
                         SaveData(existingWords);
                         Console.WriteLine("Word added successfully!");
-                        Console.WriteLine("Press enter to return to menu");
+                        Console.Write("Press enter to return to menu");
                         Console.ReadLine();
                     }
                     else
@@ -1039,6 +1037,56 @@ namespace HM
                 }
             }
 
+
+
+
+
+            static string NewPlayerStoryIntro()
+            {
+
+                Console.Clear();
+                Console.WriteLine("--------------------------");
+                Console.WriteLine("Let's create a new player: ");
+                Console.WriteLine("");
+                Console.Write("Enter your name: ");
+                string? name = Console.ReadLine();
+
+                while (true)
+                {
+
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        Console.WriteLine($"Ok. Great {name}. Let's begin.");
+                        Thread.Sleep(1000);
+
+                        Console.Clear();
+
+                        sentence1 = $"";
+                        sentence2 = $"";
+                        sentence3 = $"";
+                        sentence4 = $"";
+                        sentence5 = $"";
+                        sentence6 = $"";
+
+                        return name;
+                        break;
+
+                    }
+                    else
+                    {
+
+                    }
+
+                    return null;
+
+                }
+
+            }
+
+
+
+
+
             static void removeUser(string userName)
             {
                 List<User> users = LoadUsers(); // Load existing users
@@ -1074,7 +1122,7 @@ namespace HM
 
 
                 Console.WriteLine("");
-                Console.WriteLine("Press enter to return to menu");
+                Console.Write("Press enter to return to menu");
                 Console.ReadLine();
 
 
@@ -1082,14 +1130,16 @@ namespace HM
 
             static void ExitApp()
             {
-
+                Console.WriteLine("");
                 Console.Write("Quiting game");
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 4; i++)
                 {
-                    Thread.Sleep(500);
+                    Thread.Sleep(400);
                     Console.Write(".");
                 }
-                Console.Write("");
+                Console.WriteLine("");
+                Thread.Sleep(100);
+                Console.WriteLine("Good Bye!");
                 Environment.Exit(0);
             }
 

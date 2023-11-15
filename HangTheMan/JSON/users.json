@@ -1,7 +1,27 @@
 [
   {
     "Name": "Test",
-    "Money": 50,
-    "Lives": 1
+    "Money": 30,
+    "Lives": 2
+  },
+  {
+    "Name": "Test",
+    "Money": 20,
+    "Lives": 7
+  },
+  {
+    "Name": "Kaj",
+    "Money": 20,
+    "Lives": 5
+  },
+  {
+    "Name": "Paa",
+    "Money": 10,
+    "Lives": 7
+  },
+  {
+    "Name": "Teesstt",
+    "Money": 20,
+    "Lives": 7
   }
 ]
