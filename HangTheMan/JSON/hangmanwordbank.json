@@ -1,41 +1,47 @@
 [
     {
-        "Word": "Hangman"
+        "Word": "hangman"
     },
     {
-        "Word": "Sunset"
+        "Word": "sunset"
     },
     {
-        "Word": "Sunrise"
+        "Word": "sunrise"
     },
     {
-        "Word": "Television"
+        "Word": "television"
     },
     {
-        "Word": "Chair"
+        "Word": "chair"
     },
     {
-        "Word": "Amen"
+        "Word": "amen"
     },
     {
-        "Word": "Weekend"
+        "Word": "weekend"
     },
     {
-        "Word": "Axe"
+        "Word": "axe"
     },
     {
-        "Word": "Paradise"
+        "Word": "paradise"
     },
     {
-        "Word": "Polygraph"
+        "Word": "polygraph"
     },
     {
-        "Word": "Zenith"
+        "Word": "zenith"
     },
     {
-        "Word": "Zebra"
+        "Word": "zebra"
     },
     {
-        "Word": "Style"
+        "Word": "style"
+    },
+    {
+        "Word": "donkey"
+    },
+    {
+        "Word": "peace"
     }
 ]

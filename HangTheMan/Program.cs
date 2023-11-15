@@ -99,9 +99,10 @@ namespace HM
                 while (true)
                 {
                     Console.WriteLine("Choose a difficulty level");
-                    Console.WriteLine("Press 1. Easy");
-                    Console.WriteLine("Press 2. Medium");
-                    Console.WriteLine("Press 3. Hard");
+                    Console.WriteLine($"------");
+                    Console.WriteLine("[Press 1] Easy - (win 6 USD)");
+                    Console.WriteLine("[Press 2]. Medium - (win 8 USD)");
+                    Console.WriteLine("[Press 3]. Hard - (win 10 USD)");
                     Console.Write("Choose: ");
 
                     if (!int.TryParse(Console.ReadLine(), out level))
@@ -145,12 +146,29 @@ namespace HM
 
                 int Lives = userLives;
                 int Money = userMoney;
+                string levelString;
+                int levelPoints;
+                if (level == 1)
+                {
+                    levelString = "Easy";
+                    levelPoints = 6;
+                }
+                else if (level == 2)
+                {
+                    levelString = "Medium";
+                    levelPoints = 8;
+                }
+                else
+                {
+                    levelString = "Hard";
+                    levelPoints = 10;
+                }
 
                 Console.Clear();
                 Console.WriteLine($"----------------------");
                 Console.WriteLine("THE GAME HAS STARTED!");
                 Console.WriteLine($"----------------------");
-                Console.WriteLine($"Player: {userName}, Money: {userMoney} - You have bet {bet} USD ");
+                Console.WriteLine($"Player: {userName}, Level: {levelString}, Money: {userMoney} - You have bet {bet} USD ");
                 Console.WriteLine($"");
                 Console.WriteLine("Enter your first guess.");
                 Console.WriteLine($"");
@@ -246,8 +264,12 @@ namespace HM
                         User currentUser_update = users.Find(user => user.Name == userName);
                         int new_Lives = Lives;
                         currentUser_update.Lives = Lives;
+                        currentUser_update.Money += levelPoints;
                         SaveUsers(users);
-                        Console.WriteLine($"You won {bet} USD!");
+                        Console.WriteLine($"Winnings:");
+                        Console.WriteLine($"For level {levelString}: {levelPoints} USD.");
+                        Console.WriteLine($"Bettings: {bet} USD.");
+                        Console.WriteLine($"Total winnings: {bet + levelPoints}");
                         Console.WriteLine($"Player: {currentUser_update.Name}");
                         Console.WriteLine($"Money: {currentUser_update.Money} USD");
                         Console.WriteLine($"Lives: {new_Lives}");
@@ -606,7 +628,7 @@ namespace HM
             {
 
                 Console.Write("Add a new word: ");
-                string newWord = Console.ReadLine();
+                string newWord = Console.ReadLine().ToLower();
                 if (!string.IsNullOrWhiteSpace(newWord))
                 {
 
@@ -640,6 +662,7 @@ namespace HM
 
                 // Add a line break after printing the guessed words
                 Console.Clear();
+                Console.WriteLine($"");
                 Console.WriteLine($"-------------------------------------");
                 Console.WriteLine($"YES!!! The letter '{let1.ToUpper()}' is correct!");
 
@@ -682,6 +705,7 @@ namespace HM
             static void wrongGuess(string let1, ref string currentState)
             {
                 Console.Clear();
+                Console.WriteLine($"");
                 Console.WriteLine($"-------------------------------------");
                 Console.WriteLine($"NO!!! The letter '{let1.ToUpper()}' is not correct!");
                 // var guessesLetter = new List<string>();
@@ -1421,7 +1445,12 @@ namespace HM
                 Console.WriteLine("   If you run out of lives, you can always buy new lives for the money.");
                 Console.WriteLine("BETTING:");
                 Console.WriteLine("   To earn more money, you need to bet before the Hangman game.");
-                Console.WriteLine("   You will either loose or win the betting amount depending on if you win or loose the game.");
+                Console.WriteLine("   You will either loose or win the betting amount depending on if you win or loose the Hangmsn sequence.");
+                Console.WriteLine("WINNIGS:");
+                Console.WriteLine("   You win money by winning a Hangman sequence.");
+                Console.WriteLine("   For level easy = 6 USD, for medium = 8 USD, for hard = 10 USD.");
+                Console.WriteLine("");
+                Console.WriteLine("GOOD LUCK!");
                 Console.WriteLine("-----------------------");
 
 
