@@ -1,6 +1,6 @@
 using System;
 
-namespace HM
+namespace TheHangMan
 {
 
     [Serializable] 

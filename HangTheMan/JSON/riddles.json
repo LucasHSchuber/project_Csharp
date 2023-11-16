@@ -8,5 +8,20 @@
         "question": "I am easy to lift, but hard to throw. What am I?",
         "answer": "A feather",
         "keyword": "feather"
+    },
+    {
+        "question": "What has a neck but no head?",
+        "answer": "A bottle",
+        "keyword": "bottle"
+    },
+    {
+        "question": "Rachel goes to the supermarket and buys 10 tomatoes. Unfortunately, on the way back home, all but 9 get ruined. How many tomatoes are left in a good condition?",
+        "answer": "Nine",
+        "keyword": "nine"
+    },
+    {
+        "question": "It belongs to you, but your friends use it more. What is it?",
+        "answer": "Your name",
+        "keyword": "name"
     }
 ]

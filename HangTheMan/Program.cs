@@ -8,7 +8,10 @@ using System.Threading;
 // using System.Text.Json;
 
 
-namespace HM
+using HangTheMan.methods;
+
+
+namespace TheHangMan
 {
     class Program
     {
@@ -30,17 +33,7 @@ namespace HM
             bool exit = false;
             do
             {
-                Console.Clear();
-                Console.WriteLine($"--------------");
-                Console.WriteLine($"WELCOME!");
-                Console.WriteLine($"");
-                Console.WriteLine($"1. Play Hangman");
-                Console.WriteLine($"2. Add new word");
-                Console.WriteLine($"3. Players");
-                Console.WriteLine($"4. Rules");
-                Console.WriteLine($"5. Quit game");
-                Console.WriteLine($"");
-                Console.WriteLine($"--------------");
+                DisplayMenu();
 
                 Console.Write("Choose: ");
                 string? choice = Console.ReadLine();
@@ -154,7 +147,7 @@ namespace HM
                     }
                 }
 
-                //Load word 
+                //LOAD WORD 
                 string theWord = LoadHangmanWord(level, categoryString).ToLower();
                 //convert loaded word to underscored string
                 string currentState = new string('_', theWord.Length);
@@ -166,12 +159,13 @@ namespace HM
                 users = LoadUsers();
                 User updUser = users.Find(user => user.Name == userName);
 
+                //IF USER HAS MONEY MAKE IT AVAILABLE TO BET 
                 int bet;
                 if (updUser.Money != null && updUser.Money > 0)
                 {
                     bet = Bets(userName);
                 }
-                else
+                else //IF NO MONEY
                 {
                     bet = 0;
                 }
@@ -194,21 +188,12 @@ namespace HM
                     levelPoints = 10;
                 }
 
-
-                Console.Clear();
-                Console.WriteLine($"------");
-                Console.WriteLine("Game details");
-                Console.WriteLine($"------");
-                Console.WriteLine($"Player: {userName}");
-                Console.WriteLine($"Game level: {levelString}, Category: {categoryString}");
-                Console.WriteLine($"Chance to win: {levelPoints} USD");
-                Console.WriteLine($"Current money: {updUser.Money} USD");
-                Console.WriteLine($"Bettings: {bet} USD ");
-                Console.WriteLine($"");
+                //SHOWING GAME DETAILS BEFORE STARTING GAME
+                GameDetails(userName, levelString, categoryString, levelPoints, updUser.Money, bet);
                 Console.Write($"Press enter to start the game ");
                 Console.ReadLine();
 
-
+                //GAME HAS STARTED
                 Console.Clear();
                 Console.WriteLine($"----------------------");
                 Console.WriteLine("THE GAME HAS STARTED!");
@@ -219,7 +204,7 @@ namespace HM
                 Console.WriteLine($"{currentState}");
                 Console.WriteLine($"");
 
-                DrawLives(Lives);
+                DrawLivesMethod.DrawLives(Lives);
                 Console.Write($"Lives: {Lives} ");
                 LivesAsHeart(Lives);
                 Console.WriteLine($"");
@@ -270,7 +255,7 @@ namespace HM
                                 }
 
                                 //Show amount of lives left to user
-                                DrawLives(Lives);
+                                DrawLivesMethod.DrawLives(Lives);
                                 Console.Write($"Lives: {Lives} ");
                                 LivesAsHeart(Lives);
                                 Console.WriteLine($"");
@@ -303,7 +288,7 @@ namespace HM
                         Console.WriteLine($"CONGRATULATIONS! You won! The correct word was: '{theWord.ToUpper()}'.");
                         Console.WriteLine($"----------------------");
 
-
+                        //IF USER HAS MADE A BET - ADD IT TO USER
                         if (bet > 0)
                         {
                             users = LoadUsers();
@@ -318,7 +303,6 @@ namespace HM
                         }
 
                         users = LoadUsers();
-                        // List<User> users_update = LoadUsers();
                         User currentUser_update = users.Find(user => user.Name == userName);
                         int new_Lives = Lives;
                         currentUser_update.Lives = Lives;
@@ -356,10 +340,9 @@ namespace HM
                         Console.WriteLine($"----------------------");
                         Console.WriteLine($"GAME OVER!");
                         Console.WriteLine($"----------------------");
-                        DrawLives(Lives);
+                        DrawLivesMethod.DrawLives(Lives);
                         Console.WriteLine($"");
 
-                        // Thread.Sleep(2000);
                         GameOver(theWord, currentState, ref Lives, bet, userName, userMoney);
 
                     }
@@ -370,6 +353,34 @@ namespace HM
 
 
             //****METHODS****
+            static void DisplayMenu()
+            {
+
+                Console.Clear();
+                Console.WriteLine($"--------------");
+                Console.WriteLine($"WELCOME!");
+                Console.WriteLine($"");
+                Console.WriteLine($"1. Play Hangman");
+                Console.WriteLine($"2. Add new word");
+                Console.WriteLine($"3. Players");
+                Console.WriteLine($"4. Rules");
+                Console.WriteLine($"5. Quit game");
+                Console.WriteLine($"");
+                Console.WriteLine($"--------------");
+            }
+            static void GameDetails(string userName, string levelString, string categoryString, int levelPoints, int updUserMoney, int bet)
+            {
+                Console.Clear();
+                Console.WriteLine($"------");
+                Console.WriteLine("Game details");
+                Console.WriteLine($"------");
+                Console.WriteLine($"Player: {userName}");
+                Console.WriteLine($"Game level: {levelString}, Category: {categoryString}");
+                Console.WriteLine($"Chance to win: {levelPoints} USD");
+                Console.WriteLine($"Current money: {updUserMoney} USD");
+                Console.WriteLine($"Bettings: {bet} USD ");
+                Console.WriteLine($"");
+            }
 
             static void ViewPlayers()
             {
@@ -393,11 +404,9 @@ namespace HM
                         Number++; //Adding 1 to each message when printing them in console
                     }
                 }
-
                 Console.WriteLine("");
                 Console.Write("Press enter to return to menu");
                 Console.ReadLine();
-
             }
 
             //Add a new user when user presses 'N' at start
@@ -506,7 +515,7 @@ namespace HM
                 // Console.Clear();
                 Console.WriteLine($"-------------------------------");
                 Console.WriteLine($"Player: {users[index].Name}");
-                Console.WriteLine($"Money: {users[index].Money}");
+                Console.WriteLine($"Money: {users[index].Money} USD");
                 Console.WriteLine($"Lives: {users[index].Lives}");
                 Console.WriteLine($"");
 
@@ -803,9 +812,10 @@ namespace HM
 
                 // userInput = LoadWord(userInput);
                 return updatedStateString;
-
-
             }
+
+
+
             //if user guess wrong letter
             static void wrongGuess(string let1, ref string currentState)
             {
@@ -832,6 +842,7 @@ namespace HM
 
             }
 
+
             //if user looses game!
             static void GameOver(string theWord, string currentState, ref int Lives, int bet, string userName, int userMoney)
             {
@@ -845,7 +856,7 @@ namespace HM
                     Console.WriteLine($"GAME OVER!");
                     Console.WriteLine($"----------------------");
                     // Thread.Sleep(2000);
-                    DrawLives(Lives);
+                    DrawLivesMethod.DrawLives(Lives);
 
                     if (currentUser.Money == 0)
                     {
@@ -962,7 +973,7 @@ namespace HM
                 Console.WriteLine($"");
                 Console.WriteLine(currentState.ToUpper());
                 Console.WriteLine($"");
-                DrawLives(Lives);
+                DrawLivesMethod.DrawLives(Lives);
 
             }
 
@@ -991,7 +1002,7 @@ namespace HM
                 Console.WriteLine(currentState.ToUpper());
                 Console.WriteLine($"");
 
-                DrawLives(Lives);
+                DrawLivesMethod.DrawLives(Lives);
                 Console.Write($"Lives: {Lives} ");
                 LivesAsHeart(Lives);
                 Console.WriteLine($"");
@@ -1043,155 +1054,155 @@ namespace HM
                 }
             }
 
-            //Drawing the hangman-status
-            static void DrawLives(int Lives)
-            {
-                switch (Lives)
-                {
-                    case 10:
-                        Console.WriteLine("   ");
-                        Console.WriteLine("                ");
-                        Console.WriteLine("         ");
-                        Console.WriteLine("   ");
-                        Console.WriteLine("   ");
-                        Console.WriteLine("   ");
-                        Console.WriteLine("   ");
-                        Console.WriteLine("   ");
-                        Console.WriteLine("----------------------------       ");
-                        break;
+            // //Drawing the hangman-status
+            // static void DrawLives(int Lives)
+            // {
+            //     switch (Lives)
+            //     {
+            //         case 10:
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("                ");
+            //             Console.WriteLine("         ");
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
 
-                    case 9:
-                        Console.WriteLine("   ");
-                        Console.WriteLine("                ");
-                        Console.WriteLine("         ");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("----------------------------       ");
-                        break;
+            //         case 9:
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("                ");
+            //             Console.WriteLine("         ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
 
-                    case 8:
-                        Console.WriteLine("   ");
-                        Console.WriteLine("   |              ");
-                        Console.WriteLine("   |        ");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("----------------------------       ");
-                        break;
+            //         case 8:
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("   |              ");
+            //             Console.WriteLine("   |        ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
 
-                    case 7:
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |  /              ");
-                        Console.WriteLine("   | /        ");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("----------------------------       ");
-                        break;
+            //         case 7:
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |  /              ");
+            //             Console.WriteLine("   | /        ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
 
-                    case 6:
-                        Console.WriteLine("   |-------------------");
-                        Console.WriteLine("   |  /              ");
-                        Console.WriteLine("   | /        ");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("----------------------------       ");
-                        break;
+            //         case 6:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /              ");
+            //             Console.WriteLine("   | /        ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
 
-                    case 5:
-                        Console.WriteLine("   |-------------------");
-                        Console.WriteLine("   |  /               |");
-                        Console.WriteLine("   | /        ");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("----------------------------       ");
-                        break;
+            //         case 5:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /               |");
+            //             Console.WriteLine("   | /        ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
 
-                    case 4:
-                        Console.WriteLine("   |-------------------");
-                        Console.WriteLine("   |  /               |");
-                        Console.WriteLine("   | /               ('')");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("----------------------------       ");
-                        break;
+            //         case 4:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /               |");
+            //             Console.WriteLine("   | /               ('')");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
 
-                    case 3:
-                        Console.WriteLine("   |-------------------");
-                        Console.WriteLine("   |  /               |");
-                        Console.WriteLine("   | /               ('')");
-                        Console.WriteLine("   |                 /|| ");
-                        Console.WriteLine("   |                  ||");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("----------------------------       ");
-                        break;
+            //         case 3:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /               |");
+            //             Console.WriteLine("   | /               ('')");
+            //             Console.WriteLine("   |                 /|| ");
+            //             Console.WriteLine("   |                  ||");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
 
-                    case 2:
-                        Console.WriteLine("   |-------------------");
-                        Console.WriteLine("   |  /               |");
-                        Console.WriteLine("   | /               ('')");
-                        Console.WriteLine("   |                 /|| ");
-                        Console.WriteLine("   |                  ||");
-                        Console.WriteLine("   |                 /   ");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("----------------------------       ");
-                        break;
-                    case 1:
-                        Console.WriteLine("   |-------------------                           ");
-                        Console.WriteLine("   |  /               |      |--------------|   ");
-                        Console.WriteLine("   | /               (**) ---| LAST CHANCE! |   ");
-                        Console.WriteLine("   |                 /||     |______________|   ");
-                        Console.WriteLine("   |                  ||              ");
-                        Console.WriteLine("   |                 / ");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("   |");
-                        Console.WriteLine("----------------------------       ");
-                        break;
-                    case 0:
-                        Console.WriteLine("   |-------------------");
-                        Console.WriteLine("   |  /               |   ");
-                        Console.WriteLine("   | /                |   ");
-                        Console.WriteLine("   |                  |  ");
-                        Console.WriteLine("   |                 (--) ");
-                        Console.WriteLine("   |                 /||   ");
-                        Console.WriteLine("   |                  ||      ");
-                        Console.WriteLine("   |                  /           ");
-                        Console.WriteLine("----------------------------       ");
+            //         case 2:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /               |");
+            //             Console.WriteLine("   | /               ('')");
+            //             Console.WriteLine("   |                 /|| ");
+            //             Console.WriteLine("   |                  ||");
+            //             Console.WriteLine("   |                 /   ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+            //         case 1:
+            //             Console.WriteLine("   |-------------------                           ");
+            //             Console.WriteLine("   |  /               |      |--------------|   ");
+            //             Console.WriteLine("   | /               (**) ---| LAST CHANCE! |   ");
+            //             Console.WriteLine("   |                 /||     |______________|   ");
+            //             Console.WriteLine("   |                  ||              ");
+            //             Console.WriteLine("   |                 / ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+            //         case 0:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /               |   ");
+            //             Console.WriteLine("   | /                |   ");
+            //             Console.WriteLine("   |                  |  ");
+            //             Console.WriteLine("   |                 (--) ");
+            //             Console.WriteLine("   |                 /||   ");
+            //             Console.WriteLine("   |                  ||      ");
+            //             Console.WriteLine("   |                  /           ");
+            //             Console.WriteLine("----------------------------       ");
 
-                        break;
+            //             break;
 
-                    default:
-                        Console.WriteLine("   ");
-                        Console.WriteLine("      ");
-                        Console.WriteLine("      ");
-                        Console.WriteLine("       ");
-                        Console.WriteLine("     ");
-                        Console.WriteLine("    ");
-                        Console.WriteLine("    ");
-                        Console.WriteLine("      ");
-                        Console.WriteLine("----------------------------       ");
-                        break;
-                }
-            }
+            //         default:
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("      ");
+            //             Console.WriteLine("      ");
+            //             Console.WriteLine("       ");
+            //             Console.WriteLine("     ");
+            //             Console.WriteLine("    ");
+            //             Console.WriteLine("    ");
+            //             Console.WriteLine("      ");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+            //     }
+            // }
 
 
 
@@ -1492,7 +1503,6 @@ namespace HM
                     }
                 }
 
-
             }
 
 
@@ -1703,7 +1713,7 @@ namespace HM
             }
 
 
-            static Riddle GetRandomRiddle()
+            public static Riddle GetRandomRiddle()
             {
                 List<Riddle> riddles = LoadRiddles();
                 if (riddles.Count > 0)
