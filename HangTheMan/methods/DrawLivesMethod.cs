@@ -18,6 +18,7 @@ namespace HangTheMan.methods
                     Console.WriteLine("   ");
                     Console.WriteLine("   ");
                     Console.WriteLine("   ");
+                    Console.WriteLine("   ");
                     Console.WriteLine("----------------------------       ");
                     break;
 
@@ -25,6 +26,7 @@ namespace HangTheMan.methods
                     Console.WriteLine("   ");
                     Console.WriteLine("                ");
                     Console.WriteLine("         ");
+                    Console.WriteLine("     ");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
@@ -42,13 +44,15 @@ namespace HangTheMan.methods
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
+                    Console.WriteLine("   |");
                     Console.WriteLine("----------------------------       ");
                     break;
 
                 case 7:
-                    Console.WriteLine("   |");
+                    Console.WriteLine("   |----");
                     Console.WriteLine("   |  /              ");
                     Console.WriteLine("   | /        ");
+                    Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
@@ -59,8 +63,9 @@ namespace HangTheMan.methods
 
                 case 6:
                     Console.WriteLine("   |-------------------");
-                    Console.WriteLine("   |  /              ");
+                    Console.WriteLine("   |  /                  ");
                     Console.WriteLine("   | /        ");
+                    Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
@@ -70,9 +75,10 @@ namespace HangTheMan.methods
                     break;
 
                 case 5:
-                    Console.WriteLine("   |-------------------");
+                    Console.WriteLine("   |-------------------*");
                     Console.WriteLine("   |  /               |");
                     Console.WriteLine("   | /        ");
+                    Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
@@ -82,9 +88,10 @@ namespace HangTheMan.methods
                     break;
 
                 case 4:
-                    Console.WriteLine("   |-------------------");
+                    Console.WriteLine("   |-------------------*");
                     Console.WriteLine("   |  /               |");
                     Console.WriteLine("   | /               ('')");
+                    Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
@@ -94,11 +101,12 @@ namespace HangTheMan.methods
                     break;
 
                 case 3:
-                    Console.WriteLine("   |-------------------");
+                    Console.WriteLine("   |-------------------*");
                     Console.WriteLine("   |  /               |");
                     Console.WriteLine("   | /               ('')");
-                    Console.WriteLine("   |                 /|| ");
+                    Console.WriteLine("   |                 /||\\ ");
                     Console.WriteLine("   |                  ||");
+                    Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
@@ -106,36 +114,39 @@ namespace HangTheMan.methods
                     break;
 
                 case 2:
-                    Console.WriteLine("   |-------------------");
+                    Console.WriteLine("   |-------------------*");
                     Console.WriteLine("   |  /               |");
                     Console.WriteLine("   | /               ('')");
-                    Console.WriteLine("   |                 /|| ");
+                    Console.WriteLine("   |                 /||\\ ");
                     Console.WriteLine("   |                  ||");
-                    Console.WriteLine("   |                 /   ");
+                    Console.WriteLine("   |                 /  \\ ");
+                    Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("----------------------------       ");
                     break;
                 case 1:
-                    Console.WriteLine("   |-------------------                           ");
+                    Console.WriteLine("   |-------------------*                           ");
                     Console.WriteLine("   |  /               |      |--------------|   ");
-                    Console.WriteLine("   | /               (**) ---| LAST CHANCE! |   ");
-                    Console.WriteLine("   |                 /||     |______________|   ");
+                    Console.WriteLine("   | /               (oo) ---| LAST CHANCE! |   ");
+                    Console.WriteLine("   |                --||\\     |______________|   ");
                     Console.WriteLine("   |                  ||              ");
-                    Console.WriteLine("   |                 / ");
+                    Console.WriteLine("   |                 /  \\");
+                    Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("   |");
                     Console.WriteLine("----------------------------       ");
                     break;
                 case 0:
-                    Console.WriteLine("   |-------------------");
+                    Console.WriteLine("   |-------------------*");
                     Console.WriteLine("   |  /               |   ");
                     Console.WriteLine("   | /                |   ");
                     Console.WriteLine("   |                  |  ");
-                    Console.WriteLine("   |                 (--) ");
-                    Console.WriteLine("   |                 /||   ");
+                    Console.WriteLine("   |                 (xx) ");
+                    Console.WriteLine("   |                 ||||   ");
                     Console.WriteLine("   |                  ||      ");
-                    Console.WriteLine("   |                  /           ");
+                    Console.WriteLine("   |                  ||           ");
+                    Console.WriteLine("   |");
                     Console.WriteLine("----------------------------       ");
 
                     break;
@@ -149,6 +160,7 @@ namespace HangTheMan.methods
                     Console.WriteLine("    ");
                     Console.WriteLine("    ");
                     Console.WriteLine("      ");
+                    Console.WriteLine("   ");
                     Console.WriteLine("----------------------------       ");
                     break;
             }

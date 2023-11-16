@@ -1,6 +1,7 @@
 using System;
+using TheHangMan;
 
-namespace HangTheMan.methods
+namespace TheHangMan
 {
     public static class LifeAsHeartMethod
     {

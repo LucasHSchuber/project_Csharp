@@ -13,7 +13,7 @@ using HangTheMan.methods;
 
 namespace TheHangMan
 {
-    class Program
+    public static class Program
     {
 
         public static List<wordBank> words = new List<wordBank>();
@@ -45,11 +45,11 @@ namespace TheHangMan
                         break;
 
                     case "2":
-                        AddWord();
+                        WordUtilityMethod.AddWord();
                         break;
 
                     case "3":
-                        ViewPlayers();
+                        ViewPlayersMethod.ViewPlayers();
                         break;
 
                     case "4":
@@ -78,12 +78,12 @@ namespace TheHangMan
                 int Lives = userLives;
                 int Money = userMoney;
 
-                List<User> users = LoadUsers();
+                List<User> users = UserUtilityMethod.LoadUsers();
                 int check_bought_lives = 0;
                 if (userLives <= 0 && userMoney > 0)
                 {
                     StartGameWithZeroLives(userName, userLives, userMoney);
-                    users = LoadUsers();
+                    users = UserUtilityMethod.LoadUsers();
                     User userLivesUpd = users.Find(user => user.Name == userName);
                     Lives = userLivesUpd.Lives;
                 }
@@ -126,9 +126,9 @@ namespace TheHangMan
                     Console.WriteLine($"------");
                     Console.WriteLine("Choose a difficulty level for the Hangman game sequence");
                     Console.WriteLine($"------");
-                    Console.WriteLine("[Press 1] EASY - win: 6 USD");
-                    Console.WriteLine("[Press 2] MEDIUM - win: 8 USD");
-                    Console.WriteLine("[Press 3] HARD - win: 10 USD");
+                    Console.WriteLine("[Press 1] EASY - win: 6 USD - (max bet: 5 USD)");
+                    Console.WriteLine("[Press 2] MEDIUM - win: 8 USD - (max bet: 10 USD)");
+                    Console.WriteLine("[Press 3] HARD - win: 10 USD - (max bet: unlimited)");
                     Console.Write("Choose: ");
 
                     if (!int.TryParse(Console.ReadLine(), out level))
@@ -148,7 +148,7 @@ namespace TheHangMan
                 }
 
                 //LOAD WORD 
-                string theWord = LoadHangmanWord(level, categoryString).ToLower();
+                string theWord = WordUtilityMethod.LoadHangmanWord(level, categoryString).ToLower();
                 //convert loaded word to underscored string
                 string currentState = GetInitialState(theWord);
                 // Function to get the initial state with spaces
@@ -164,18 +164,21 @@ namespace TheHangMan
                 Array.Fill(guessesLetterArray, '_'); // Fill the array with underscores
 
 
-                users = LoadUsers();
+                users = UserUtilityMethod.LoadUsers();
                 User updUser = users.Find(user => user.Name == userName);
 
-                //IF USER HAS MONEY MAKE IT AVAILABLE TO BET 
+                //IF USER HAS MONEY MAKE THEM AVAILABLE TO BET 
                 int bet;
                 if (updUser.Money != null && updUser.Money > 0)
                 {
-                    bet = Bets(userName);
+                    bet = Bets(userName, level);
                 }
                 else //IF NO MONEY
                 {
                     bet = 0;
+                    Console.WriteLine("You have no money to bet with.");
+                    Console.Write("Press enter to continue ");
+                    Console.ReadLine();
                 }
 
                 string levelString;
@@ -299,23 +302,23 @@ namespace TheHangMan
                         //IF USER HAS MADE A BET - ADD IT TO USER
                         if (bet > 0)
                         {
-                            users = LoadUsers();
+                            users = UserUtilityMethod.LoadUsers();
                             User currentUser___ = users.Find(user => user.Name == userName);
 
                             if (currentUser___ != null)
                             {
                                 currentUser___.Lives = Lives;
                                 currentUser___.Money += (bet + bet);
-                                SaveUsers(users);
+                                UserUtilityMethod.SaveUsers(users);
                             }
                         }
 
-                        users = LoadUsers();
+                        users = UserUtilityMethod.LoadUsers();
                         User currentUser_update = users.Find(user => user.Name == userName);
                         int new_Lives = Lives;
                         currentUser_update.Lives = Lives;
                         currentUser_update.Money += levelPoints;
-                        SaveUsers(users);
+                        UserUtilityMethod.SaveUsers(users);
                         Console.WriteLine($"Winnings:");
                         Console.WriteLine($"For level {levelString.ToUpper()}: {levelPoints} USD.");
                         Console.WriteLine($"Bettings: {bet} USD.");
@@ -336,18 +339,22 @@ namespace TheHangMan
                     }
                     else if (Lives <= 0)
                     {
-                        List<User> users_ = LoadUsers(); // Load existing users
+                        List<User> users_ = UserUtilityMethod.LoadUsers(); // Load existing users
                         User user = users_.Find(user => user.Name == userName);
 
                         if (user != null)
                         {
                             user.Lives = 0;
-                            SaveUsers(users_);
+                            UserUtilityMethod.SaveUsers(users_);
                         }
                         Console.Clear();
                         Console.WriteLine($"----------------------");
                         Console.WriteLine($"GAME OVER!");
                         Console.WriteLine($"----------------------");
+                        Console.WriteLine($"");
+                        Console.WriteLine($"");
+                        Console.WriteLine($"");
+                        Console.WriteLine($"");
                         DrawLivesMethod.DrawLives(Lives);
                         Console.WriteLine($"");
 
@@ -390,32 +397,8 @@ namespace TheHangMan
                 Console.WriteLine($"");
             }
 
-            static void ViewPlayers()
-            {
-                users = LoadUsers();
 
-                Console.Clear();
-                Console.WriteLine("-------------");
-                Console.WriteLine("PLAYERS:");
-                Console.WriteLine("-------------");
-                if (users.Count == 0)
-                {
-                    Console.WriteLine("");
-                    Console.WriteLine("The user list is empty.");
-                }
-                else
-                {
-                    int Number = 1;
-                    foreach (var user in users)
-                    {
-                        Console.WriteLine($"[{Number}] {user.Name} - Money:{user.Money}, Lives:{user.Lives}");
-                        Number++; //Adding 1 to each message when printing them in console
-                    }
-                }
-                Console.WriteLine("");
-                Console.Write("Press enter to return to menu");
-                Console.ReadLine();
-            }
+
 
             //Add a new user when user presses 'N' at start
             static void AddNewUser()
@@ -425,12 +408,12 @@ namespace TheHangMan
 
                 if (!string.IsNullOrEmpty(name))
                 {
-                    List<User> allUsers = LoadUsers(); // Load existing users
+                    List<User> allUsers = UserUtilityMethod.LoadUsers(); // Load existing users
                     int StarMoney = 20;
                     int StartLives = 7;
                     User newUser = new User(name, StarMoney, StartLives); // Create a new user (name,USD,lives)
                     allUsers.Add(newUser); // Add the new user to the list toghether with the other players
-                    SaveUsers(allUsers); // Save the updated list to the json file
+                    UserUtilityMethod.SaveUsers(allUsers); // Save the updated list to the json file
 
                     Console.Clear();
                     Console.WriteLine("------------------------------------------------");
@@ -441,7 +424,7 @@ namespace TheHangMan
                     Console.WriteLine($"Lives: {StartLives}");
 
 
-                    users = LoadUsers(); // Load the updated list into the global variable
+                    users = UserUtilityMethod.LoadUsers(); // Load the updated list into the global variable
 
                     int index = users.FindIndex(user => user.Name == name);
                     Console.WriteLine("");
@@ -458,34 +441,14 @@ namespace TheHangMan
             }
 
 
-            //Loads alla users in users LIST - User
-            static List<User> LoadUsers()
-            {
-                if (File.Exists(FilePathUsers))
-                {
-                    string json = File.ReadAllText(FilePathUsers);
-                    return JsonConvert.DeserializeObject<List<User>>(json) ?? new List<User>();
-                }
-                else
-                {
-                    return new List<User>();
-                }
-            }
 
-
-            //Saves a user after creating one
-            static void SaveUsers(List<User> userList)
-            {
-                string json = JsonConvert.SerializeObject(userList, Formatting.Indented);
-                File.WriteAllText(FilePathUsers, json);
-            }
 
 
             //Displays all users from List
             static void DisplayAllUsers()
             {
 
-                users = LoadUsers();
+                users = UserUtilityMethod.LoadUsers();
 
                 Console.Clear();
                 Console.WriteLine("-------------");
@@ -517,6 +480,8 @@ namespace TheHangMan
                 }
             }
 
+
+
             //Send selected player with data to Hangman-Game
             static void SelectedPlayer(int index)
             {
@@ -526,7 +491,6 @@ namespace TheHangMan
                 Console.WriteLine($"Money: {users[index].Money} USD");
                 Console.WriteLine($"Lives: {users[index].Lives}");
                 Console.WriteLine($"");
-
 
                 // Directly modify the user's data
                 User selectedUser = users[index];
@@ -538,80 +502,11 @@ namespace TheHangMan
                 string Name = selectedUser.Name;
 
                 // Save the changes to the JSON file
-                SaveUsers(users);
+                UserUtilityMethod.SaveUsers(users);
 
 
                 PlayHangman(Name, Lives, Money);
             }
-
-
-
-
-
-
-
-            //Loads hangmanword from json-file
-            //Loads hangmanword from json-file
-            static string LoadHangmanWord(int level, string category)
-            {
-                if (File.Exists(FilePathWord))
-                {
-                    List<wordBank> words = LoadWords();
-                    Random r = new Random();
-                    List<wordBank> filteredWords = words; // Initialize with all words
-
-                    // Category filter
-                    if (!string.IsNullOrEmpty(category) && category.ToLower() != "all")
-                    {
-                        filteredWords = filteredWords.Where(w => w.Category.ToLower() == category.ToLower()).ToList();
-                    }
-
-                    // Apply difficulty
-                    if (level == 1) // Easy
-                    {
-                        filteredWords = filteredWords
-                            .Where(w => !w.Word.Contains("z") && !w.Word.Contains("y") && !w.Word.Contains("x"))
-                            .Where(w => w.Word.Length <= 5)
-                            .ToList();
-                    }
-                    else if (level == 2) // Medium
-                    {
-                        filteredWords = filteredWords
-                            .Where(w => !w.Word.Contains("z") && !w.Word.Contains("y") && !w.Word.Contains("x"))
-                            .Where(w => w.Word.Length > 5 && w.Word.Length <= 7)
-                            .ToList();
-                    }
-                    else if (level == 3) // Hard
-                    {
-                        filteredWords = filteredWords
-                            .Where(w => w.Word.Length > 7 || (w.Word.Length > 4 && (w.Word.Contains("z") || w.Word.Contains("y") || w.Word.Contains("x") || w.Word.Contains("v") || w.Word.Contains("w"))))
-                            .ToList();
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid difficulty level. Please choose 1 (easy), 2 (medium), or 3 (hard).");
-                        return null;
-                    }
-
-                    if (filteredWords.Count > 0)
-                    {
-                        string randomWord = filteredWords[r.Next(0, filteredWords.Count)].Word;
-                        return randomWord;
-                    }
-                    else
-                    {
-                        Console.WriteLine("There are no words available in this difficulty at the moment. Try another one.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No words available.");
-                }
-
-                return null;
-            }
-
-
 
 
 
@@ -666,7 +561,7 @@ namespace TheHangMan
                                     currentUser.Lives = 0;
                                     currentUser.Lives += newLives;
                                     currentUser.Money -= newLives;
-                                    SaveUsers(users); // Save the changes to the JSON file
+                                    UserUtilityMethod.SaveUsers(users); // Save the changes to the JSON file
                                 }
                                 break;
                             }
@@ -695,87 +590,6 @@ namespace TheHangMan
                     }
                 }
             }
-
-
-
-
-            //Saves a word after putting it in
-            static void SaveData(List<wordBank> data)
-            {
-                string json = JsonConvert.SerializeObject(data);
-                File.WriteAllText(FilePathWord, json);
-            }
-
-
-
-            // Load existing words from the file
-            static List<wordBank> LoadWords()
-            {
-                if (File.Exists(FilePathWord))
-                {
-                    string json = File.ReadAllText(FilePathWord);
-                    return JsonConvert.DeserializeObject<List<wordBank>>(json) ?? new List<wordBank>();
-                }
-                else
-                {
-                    return new List<wordBank>();
-                }
-            }
-
-
-
-            //adds a word from user input  
-            static void AddWord()
-            {
-                string category;
-                Console.Write("Place the word in a category: ");
-                Console.WriteLine("------");
-                Console.WriteLine("Animals");
-                Console.WriteLine("Countries");
-                Console.WriteLine("");
-
-                while (true)
-                {
-                    Console.Write("Type: ");
-                    category = Console.ReadLine().ToLower();
-
-                    if (category.ToLower() != "animals" && category.ToLower() != "countries")
-                    {
-                        Console.WriteLine("Invalid input. Spell out the");
-                    }
-
-                    Console.Write("Add a new word: ");
-                    string newWord = Console.ReadLine().ToLower();
-
-                    if (!string.IsNullOrWhiteSpace(newWord))
-                    {
-
-                        List<wordBank> existingWords = LoadWords();
-
-                        if (!existingWords.Any(w => w.Word.Equals(newWord, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            wordBank word = new wordBank(newWord, category);
-                            existingWords.Add(word);
-                            SaveData(existingWords);
-                            Console.WriteLine("Word added successfully!");
-                            Console.Write("Press enter to return to the menu");
-                            Console.ReadLine();
-                        }
-                        else
-                        {
-                            Console.WriteLine("The word already exists. Please enter a different word.");
-                        }
-
-                        break; // This is where you should break out of the loop
-                    }
-
-                    else
-                    {
-                        Console.WriteLine("Invalid input. The word cannot be empty.");
-                    }
-                }
-            }
-
 
 
 
@@ -862,6 +676,10 @@ namespace TheHangMan
                     Console.WriteLine($"----------------------");
                     Console.WriteLine($"GAME OVER!");
                     Console.WriteLine($"----------------------");
+                    Console.WriteLine($"");
+                    Console.WriteLine($"");
+                    Console.WriteLine($"");
+                    Console.WriteLine($"");
                     // Thread.Sleep(2000);
                     DrawLivesMethod.DrawLives(Lives);
 
@@ -913,7 +731,7 @@ namespace TheHangMan
                                     currentUser.Lives = 0;
                                     currentUser.Lives += newLives;
                                     currentUser.Money -= newLives;
-                                    SaveUsers(users); // Save the changes to the JSON file
+                                    UserUtilityMethod.SaveUsers(users); // Save the changes to the JSON file
                                 }
 
                                 GetMoreLives(currentState, Lives);
@@ -945,7 +763,7 @@ namespace TheHangMan
                         {
                             // currentUser_.Money -= bet;
                             currentUser_.Lives = 0;
-                            SaveUsers(users); // Save the changes immediately
+                            UserUtilityMethod.SaveUsers(users); // Save the changes immediately
                         }
 
                         Console.WriteLine($"You lost your bet of {bet} USD!");
@@ -954,6 +772,7 @@ namespace TheHangMan
                         Console.WriteLine($"Lives: {currentUser_.Lives}");
                         Console.WriteLine($"----------------------");
                         Console.Write($"Press enter to exit.");
+                        Console.ReadLine();
                         ExitApp();
                         break;
 
@@ -1020,7 +839,7 @@ namespace TheHangMan
 
 
             //make user bet before start
-            static int Bets(string userName)
+            static int Bets(string userName, int level)
             {
 
                 while (true)
@@ -1031,7 +850,6 @@ namespace TheHangMan
 
                     User currentUser = users.Find(user => user.Name == userName);
 
-
                     if (!string.IsNullOrEmpty(input) && (input == "y" || input == "Y"))
                     {
                         Console.Write("How much (USD)? ");
@@ -1041,175 +859,57 @@ namespace TheHangMan
                         {
                             Console.WriteLine("You don't have enough money to make that bet.");
                         }
+                        else if (level == 1 && bets > 5)
+                        {
+                            Console.WriteLine("Maximum bet for this level is 5 USD.");
+                        }
+                        else if (level == 2 && bets > 10)
+                        {
+                            Console.WriteLine("Maximum bet for this level is 10 USD.");
+
+                        }
                         else
                         {
                             // Console.Clear();
+                            Console.WriteLine($"You have bet {bets} USD.");
                             currentUser.Money -= bets;
-                            SaveUsers(users); // Save the changes immediately
+                            UserUtilityMethod.SaveUsers(users); // Save the changes immediately
+                            Console.Write($"Press enter to continue ");
+                            Console.ReadLine();
                             return bets;
                         }
 
                     }
                     else if (!string.IsNullOrEmpty(input) && (input == "n" || input == "N"))
                     {
-                        Console.WriteLine("No bets.");
                         int bets = 0;
+                        Console.WriteLine("You have bet 0 USD.");
+                        Console.Write($"Press enter to continue ");
+                        Console.ReadLine();
                         Console.Clear();
                         return bets;
-
                     }
                 }
             }
 
-            // //Drawing the hangman-status
-            // static void DrawLives(int Lives)
-            // {
-            //     switch (Lives)
-            //     {
-            //         case 10:
-            //             Console.WriteLine("   ");
-            //             Console.WriteLine("                ");
-            //             Console.WriteLine("         ");
-            //             Console.WriteLine("   ");
-            //             Console.WriteLine("   ");
-            //             Console.WriteLine("   ");
-            //             Console.WriteLine("   ");
-            //             Console.WriteLine("   ");
-            //             Console.WriteLine("----------------------------       ");
-            //             break;
 
-            //         case 9:
-            //             Console.WriteLine("   ");
-            //             Console.WriteLine("                ");
-            //             Console.WriteLine("         ");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("----------------------------       ");
-            //             break;
 
-            //         case 8:
-            //             Console.WriteLine("   ");
-            //             Console.WriteLine("   |              ");
-            //             Console.WriteLine("   |        ");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("----------------------------       ");
-            //             break;
 
-            //         case 7:
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |  /              ");
-            //             Console.WriteLine("   | /        ");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("----------------------------       ");
-            //             break;
+            static void ExitApp()
+            {
+                Console.WriteLine("");
+                Console.Write("Quiting game");
+                for (int i = 0; i < 4; i++)
+                {
+                    Thread.Sleep(400);
+                    Console.Write(".");
+                }
+                Console.WriteLine("");
+                Thread.Sleep(100);
+                Console.WriteLine("Bye bye!");
+                Environment.Exit(0);
+            }
 
-            //         case 6:
-            //             Console.WriteLine("   |-------------------");
-            //             Console.WriteLine("   |  /              ");
-            //             Console.WriteLine("   | /        ");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("----------------------------       ");
-            //             break;
-
-            //         case 5:
-            //             Console.WriteLine("   |-------------------");
-            //             Console.WriteLine("   |  /               |");
-            //             Console.WriteLine("   | /        ");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("----------------------------       ");
-            //             break;
-
-            //         case 4:
-            //             Console.WriteLine("   |-------------------");
-            //             Console.WriteLine("   |  /               |");
-            //             Console.WriteLine("   | /               ('')");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("----------------------------       ");
-            //             break;
-
-            //         case 3:
-            //             Console.WriteLine("   |-------------------");
-            //             Console.WriteLine("   |  /               |");
-            //             Console.WriteLine("   | /               ('')");
-            //             Console.WriteLine("   |                 /|| ");
-            //             Console.WriteLine("   |                  ||");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("----------------------------       ");
-            //             break;
-
-            //         case 2:
-            //             Console.WriteLine("   |-------------------");
-            //             Console.WriteLine("   |  /               |");
-            //             Console.WriteLine("   | /               ('')");
-            //             Console.WriteLine("   |                 /|| ");
-            //             Console.WriteLine("   |                  ||");
-            //             Console.WriteLine("   |                 /   ");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("----------------------------       ");
-            //             break;
-            //         case 1:
-            //             Console.WriteLine("   |-------------------                           ");
-            //             Console.WriteLine("   |  /               |      |--------------|   ");
-            //             Console.WriteLine("   | /               (**) ---| LAST CHANCE! |   ");
-            //             Console.WriteLine("   |                 /||     |______________|   ");
-            //             Console.WriteLine("   |                  ||              ");
-            //             Console.WriteLine("   |                 / ");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("   |");
-            //             Console.WriteLine("----------------------------       ");
-            //             break;
-            //         case 0:
-            //             Console.WriteLine("   |-------------------");
-            //             Console.WriteLine("   |  /               |   ");
-            //             Console.WriteLine("   | /                |   ");
-            //             Console.WriteLine("   |                  |  ");
-            //             Console.WriteLine("   |                 (--) ");
-            //             Console.WriteLine("   |                 /||   ");
-            //             Console.WriteLine("   |                  ||      ");
-            //             Console.WriteLine("   |                  /           ");
-            //             Console.WriteLine("----------------------------       ");
-
-            //             break;
-
-            //         default:
-            //             Console.WriteLine("   ");
-            //             Console.WriteLine("      ");
-            //             Console.WriteLine("      ");
-            //             Console.WriteLine("       ");
-            //             Console.WriteLine("     ");
-            //             Console.WriteLine("    ");
-            //             Console.WriteLine("    ");
-            //             Console.WriteLine("      ");
-            //             Console.WriteLine("----------------------------       ");
-            //             break;
-            //     }
-            // }
 
 
 
@@ -1219,10 +919,7 @@ namespace TheHangMan
             {
 
                 //getting a random riddle from method
-                Riddle riddle = GetRandomRiddle();
-                //question = riddle.Question
-                //answer = riddle.Answer
-                //keyord = riddle.Keyword
+                Riddle riddle = RiddleUtilityMethod.GetRandomRiddle();
 
                 Console.Clear();
                 Console.WriteLine("");
@@ -1400,13 +1097,13 @@ namespace TheHangMan
                                 Console.WriteLine("Hangman has given you 10 new lives");
                                 Console.WriteLine("");
 
-                                List<User> users = LoadUsers(); // Load existing users
+                                List<User> users = UserUtilityMethod.LoadUsers(); // Load existing users
                                 User user = users.Find(user => user.Name == userName);
 
                                 if (user != null)
                                 {
                                     user.Lives = 10;
-                                    SaveUsers(users);
+                                    UserUtilityMethod.SaveUsers(users);
                                 }
 
                                 Thread.Sleep(1000);
@@ -1468,7 +1165,7 @@ namespace TheHangMan
                                     Thread.Sleep(20);
                                 }
                                 Console.WriteLine("");
-                                removeUser(userName);
+                                UserUtilityMethod.removeUser(userName);
                                 Thread.Sleep(1000);
 
                                 Console.ResetColor();
@@ -1499,7 +1196,7 @@ namespace TheHangMan
                         }
                         Thread.Sleep(1000);
                         Console.WriteLine();
-                        removeUser(userName); //run method to remomve user
+                        UserUtilityMethod.removeUser(userName); //run method to remomve user
                         Console.ResetColor();
                         Environment.Exit(0); //exit game
 
@@ -1637,24 +1334,372 @@ namespace TheHangMan
 
 
 
-            static void removeUser(string userName)
-            {
-                List<User> users = LoadUsers(); // Load existing users
-                                                // Find the user with the specified userName
-                User userToRemove = users.Find(user => user.Name == userName);
-                if (userToRemove != null)
-                {
-                    // Remove the user from the list
-                    users.Remove(userToRemove);
-                    // Save the updated list to the JSON file
-                    SaveUsers(users);
-                    Console.WriteLine($"User '{userName}' has been removed from the game.");
-                }
-                else
-                {
-                    Console.WriteLine($"User '{userName}' not found.");
-                }
-            }
+
+
+            // //Loads alla riddles in users LIST - User
+            // static List<Riddle> LoadRiddles()
+            // {
+            //     if (File.Exists(FilePathRiddle))
+            //     {
+            //         string json = File.ReadAllText(FilePathRiddle);
+            //         return JsonConvert.DeserializeObject<List<Riddle>>(json) ?? new List<Riddle>();
+            //     }
+            //     else
+            //     {
+            //         return new List<Riddle>();
+            //     }
+            // }
+
+
+            // static Riddle GetRandomRiddle()
+            // {
+            //     List<Riddle> riddles = LoadRiddles();
+            //     if (riddles.Count > 0)
+            //     {
+            //         Random random = new Random();
+            //         int randomIndex = random.Next(0, riddles.Count);
+            //         return riddles[randomIndex];
+            //     }
+            //     else
+            //     {
+            //         Console.WriteLine("No riddles available.");
+            //         return null;
+            //     }
+            // }
+
+
+
+
+            // //Loads hangmanword from json-file
+            // static string LoadHangmanWord(int level, string category)
+            // {
+            //     if (File.Exists(FilePathWord))
+            //     {
+            //         List<wordBank> words = WordUtilityMethod.LoadWords();
+            //         Random r = new Random();
+            //         List<wordBank> filteredWords = words; // Initialize with all words
+
+            //         // Category filter
+            //         if (!string.IsNullOrEmpty(category) && category.ToLower() != "all")//if there is an 'all' category
+            //         {
+            //             filteredWords = filteredWords.Where(w => w.Category.ToLower() == category.ToLower()).ToList();
+            //         }
+
+            //         // Apply difficulty
+            //         if (level == 1) // Easy
+            //         {
+            //             filteredWords = filteredWords
+            //                 .Where(w => !w.Word.Contains("z") && !w.Word.Contains("y") && !w.Word.Contains("x"))
+            //                 .Where(w => w.Word.Length <= 5)
+            //                 .ToList();
+            //         }
+            //         else if (level == 2) // Medium
+            //         {
+            //             filteredWords = filteredWords
+            //                 .Where(w => !w.Word.Contains("z") && !w.Word.Contains("y") && !w.Word.Contains("x"))
+            //                 .Where(w => w.Word.Length > 5 && w.Word.Length <= 7)
+            //                 .ToList();
+            //         }
+            //         else if (level == 3) // Hard
+            //         {
+            //             filteredWords = filteredWords
+            //                 .Where(w => w.Word.Length > 7 || (w.Word.Length > 4 && (w.Word.Contains("z") || w.Word.Contains("y") || w.Word.Contains("x") || w.Word.Contains("v") || w.Word.Contains("w"))))
+            //                 .ToList();
+            //         }
+            //         else
+            //         {
+            //             Console.WriteLine("Invalid difficulty level. Please choose 1 (easy), 2 (medium), or 3 (hard).");
+            //             return null;
+            //         }
+
+            //         if (filteredWords.Count > 0)
+            //         {
+            //             string randomWord = filteredWords[r.Next(0, filteredWords.Count)].Word;
+            //             return randomWord;
+            //         }
+            //         else
+            //         {
+            //             Console.WriteLine("There are no words available in this difficulty at the moment. Try another one.");
+            //         }
+            //     }
+            //     else
+            //     {
+            //         Console.WriteLine("No words available.");
+            //     }
+
+            //     return null;
+            // }
+
+
+
+
+
+
+            // // Load existing words from the file
+            // static List<wordBank> LoadWords()
+            // {
+            //     if (File.Exists(FilePathWord))
+            //     {
+            //         string json = File.ReadAllText(FilePathWord);
+            //         return JsonConvert.DeserializeObject<List<wordBank>>(json) ?? new List<wordBank>();
+            //     }
+            //     else
+            //     {
+            //         return new List<wordBank>();
+            //     }
+            // }
+
+
+
+            // //Saves a word after putting it in
+            // static void SaveWord(List<wordBank> data)
+            // {
+            //     string json = JsonConvert.SerializeObject(data);
+            //     File.WriteAllText(FilePathWord, json);
+            // }
+
+            // //adds a word from user input  
+            // static void AddWord()
+            // {
+            //     string category;
+            //     Console.WriteLine("");
+            //     Console.WriteLine("Place the word in a category: ");
+            //     Console.WriteLine("------");
+            //     Console.WriteLine("Animals");
+            //     Console.WriteLine("Countries");
+            //     Console.WriteLine("");
+
+            //     while (true)
+            //     {
+            //         Console.Write("Type: ");
+            //         category = Console.ReadLine().ToLower();
+
+            //         if (category.ToLower() != "animals" && category.ToLower() != "countries")
+            //         {
+            //             Console.WriteLine("Invalid input. Spell out the");
+            //         }
+
+            //         Console.Write("Add a new word: ");
+            //         string newWord = Console.ReadLine().ToLower();
+
+            //         if (!string.IsNullOrWhiteSpace(newWord))
+            //         {
+
+            //             List<wordBank> existingWords = WordUtilityMethod.LoadWords();
+
+            //             if (!existingWords.Any(w => w.Word.Equals(newWord, StringComparison.OrdinalIgnoreCase)))
+            //             {
+            //                 wordBank word = new wordBank(newWord, category);
+            //                 existingWords.Add(word);
+            //                 SaveWord(existingWords);
+            //                 Console.WriteLine("Word added successfully!");
+            //                 Console.Write("Press enter to return to the menu");
+            //                 Console.ReadLine();
+            //             }
+            //             else
+            //             {
+            //                 Console.WriteLine("The word already exists. Please enter a different word.");
+            //             }
+
+            //             break; // This is where you should break out of the loop
+            //         }
+
+            //         else
+            //         {
+            //             Console.WriteLine("Invalid input. The word cannot be empty.");
+            //         }
+            //     }
+            // }
+
+
+
+
+
+            // //Loads alla users in users LIST - User
+            // static List<User> UserUtilityMethod.LoadUsers()
+            // {
+            //     if (File.Exists(FilePathUsers))
+            //     {
+            //         string json = File.ReadAllText(FilePathUsers);
+            //         return JsonConvert.DeserializeObject<List<User>>(json) ?? new List<User>();
+            //     }
+            //     else
+            //     {
+            //         return new List<User>();
+            //     }
+            // }
+
+
+            // //Drawing the hangman-status
+            // static void DrawLives(int Lives)
+            // {
+            //     switch (Lives)
+            //     {
+            //         case 10:
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("                ");
+            //             Console.WriteLine("         ");
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+
+            //         case 9:
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("                ");
+            //             Console.WriteLine("         ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+
+            //         case 8:
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("   |              ");
+            //             Console.WriteLine("   |        ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+
+            //         case 7:
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |  /              ");
+            //             Console.WriteLine("   | /        ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+
+            //         case 6:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /              ");
+            //             Console.WriteLine("   | /        ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+
+            //         case 5:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /               |");
+            //             Console.WriteLine("   | /        ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+
+            //         case 4:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /               |");
+            //             Console.WriteLine("   | /               ('')");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+
+            //         case 3:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /               |");
+            //             Console.WriteLine("   | /               ('')");
+            //             Console.WriteLine("   |                 /|| ");
+            //             Console.WriteLine("   |                  ||");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+
+            //         case 2:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /               |");
+            //             Console.WriteLine("   | /               ('')");
+            //             Console.WriteLine("   |                 /|| ");
+            //             Console.WriteLine("   |                  ||");
+            //             Console.WriteLine("   |                 /   ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+            //         case 1:
+            //             Console.WriteLine("   |-------------------                           ");
+            //             Console.WriteLine("   |  /               |      |--------------|   ");
+            //             Console.WriteLine("   | /               (**) ---| LAST CHANCE! |   ");
+            //             Console.WriteLine("   |                 /||     |______________|   ");
+            //             Console.WriteLine("   |                  ||              ");
+            //             Console.WriteLine("   |                 / ");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("   |");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+            //         case 0:
+            //             Console.WriteLine("   |-------------------");
+            //             Console.WriteLine("   |  /               |   ");
+            //             Console.WriteLine("   | /                |   ");
+            //             Console.WriteLine("   |                  |  ");
+            //             Console.WriteLine("   |                 (--) ");
+            //             Console.WriteLine("   |                 /||   ");
+            //             Console.WriteLine("   |                  ||      ");
+            //             Console.WriteLine("   |                  /           ");
+            //             Console.WriteLine("----------------------------       ");
+
+            //             break;
+
+            //         default:
+            //             Console.WriteLine("   ");
+            //             Console.WriteLine("      ");
+            //             Console.WriteLine("      ");
+            //             Console.WriteLine("       ");
+            //             Console.WriteLine("     ");
+            //             Console.WriteLine("    ");
+            //             Console.WriteLine("    ");
+            //             Console.WriteLine("      ");
+            //             Console.WriteLine("----------------------------       ");
+            //             break;
+            //     }
+            // }
+
+
+
+            // static void removeUser(string userName)
+            // {
+            //     List<User> users = UserUtilityMethod.LoadUsers(); // Load existing users
+            //                                                       // Find the user with the specified userName
+            //     User userToRemove = users.Find(user => user.Name == userName);
+            //     if (userToRemove != null)
+            //     {
+            //         // Remove the user from the list
+            //         users.Remove(userToRemove);
+            //         // Save the updated list to the JSON file
+            //         UserUtilityMethod.SaveUsers(users);
+            //         Console.WriteLine($"User '{userName}' has been removed from the game.");
+            //     }
+            //     else
+            //     {
+            //         Console.WriteLine($"User '{userName}' not found.");
+            //     }
+            // }
 
             // static void Rules()
             // {
@@ -1687,52 +1732,6 @@ namespace TheHangMan
 
 
 
-            //Loads alla riddles in users LIST - User
-            static List<Riddle> LoadRiddles()
-            {
-                if (File.Exists(FilePathRiddle))
-                {
-                    string json = File.ReadAllText(FilePathRiddle);
-                    return JsonConvert.DeserializeObject<List<Riddle>>(json) ?? new List<Riddle>();
-                }
-                else
-                {
-                    return new List<Riddle>();
-                }
-            }
-
-
-            static Riddle GetRandomRiddle()
-            {
-                List<Riddle> riddles = LoadRiddles();
-                if (riddles.Count > 0)
-                {
-                    Random random = new Random();
-                    int randomIndex = random.Next(0, riddles.Count);
-                    return riddles[randomIndex];
-                }
-                else
-                {
-                    Console.WriteLine("No riddles available.");
-                    return null;
-                }
-            }
-
-            static void ExitApp()
-            {
-                Console.WriteLine("");
-                Console.Write("Quiting game");
-                for (int i = 0; i < 4; i++)
-                {
-                    Thread.Sleep(400);
-                    Console.Write(".");
-                }
-                Console.WriteLine("");
-                Thread.Sleep(100);
-                Console.WriteLine("Good Bye!");
-                Environment.Exit(0);
-            }
-
 
             // static void LivesAsHeart(int amount)
             // {
@@ -1742,6 +1741,37 @@ namespace TheHangMan
             //         Console.Write("❤ ");
             //     }
             // }
+
+
+
+
+            // static void ViewPlayers()
+            // {
+            //     users = UserUtilityMethod.LoadUsers();
+
+            //     Console.Clear();
+            //     Console.WriteLine("-------------");
+            //     Console.WriteLine("PLAYERS:");
+            //     Console.WriteLine("-------------");
+            //     if (users.Count == 0)
+            //     {
+            //         Console.WriteLine("");
+            //         Console.WriteLine("The user list is empty.");
+            //     }
+            //     else
+            //     {
+            //         int Number = 1;
+            //         foreach (var user in users)
+            //         {
+            //             Console.WriteLine($"[{Number}] {user.Name} - Money:{user.Money}, Lives:{user.Lives}");
+            //             Number++; //Adding 1 to each message when printing them in console
+            //         }
+            //     }
+            //     Console.WriteLine("");
+            //     Console.Write("Press enter to return to menu");
+            //     Console.ReadLine();
+            // }
+
         }
     }
 }

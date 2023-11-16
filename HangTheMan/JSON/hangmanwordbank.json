@@ -86,5 +86,17 @@
     {
         "Word": "Fox",
         "Category": "animals"
+    },
+    {
+        "Word": "bird",
+        "Category": "animals"
+    },
+    {
+        "Word": "mexico",
+        "Category": "countries"
+    },
+    {
+        "Word": "kangaroo",
+        "Category": "animals"
     }
 ]
