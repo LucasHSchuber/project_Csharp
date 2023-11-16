@@ -1,1 +1,90 @@
-[{"Word":"lion","Category":"Animals"},{"Word":"sweden","Category":"Countries"},{"Word":"elephant","Category":"Animals"},{"Word":"zimbabwe","Category":"Countries"},{"Word":"zebra","Category":"animals"},{"Word":"iran","Category":"Countries"},{"Word":"camel","Category":"animals"},{"Word":"indonesia","Category":"countries"},{"Word":"irak","Category":"countries"},{"Word":"hamster","Category":"animals"},{"Word":"parrot","Category":"animals"},{"Word":"iceland","Category":"countries"},{"Word":"ant","Category":"animals"}]
+[
+    {
+        "Word": "lion",
+        "Category": "Animals"
+    },
+    {
+        "Word": "sweden",
+        "Category": "Countries"
+    },
+    {
+        "Word": "elephant",
+        "Category": "Animals"
+    },
+    {
+        "Word": "zimbabwe",
+        "Category": "Countries"
+    },
+    {
+        "Word": "zebra",
+        "Category": "animals"
+    },
+    {
+        "Word": "iran",
+        "Category": "Countries"
+    },
+    {
+        "Word": "camel",
+        "Category": "animals"
+    },
+    {
+        "Word": "indonesia",
+        "Category": "countries"
+    },
+    {
+        "Word": "irak",
+        "Category": "countries"
+    },
+    {
+        "Word": "hamster",
+        "Category": "animals"
+    },
+    {
+        "Word": "parrot",
+        "Category": "animals"
+    },
+    {
+        "Word": "iceland",
+        "Category": "countries"
+    },
+    {
+        "Word": "ant",
+        "Category": "animals"
+    },
+    {
+        "Word": "new zeeland",
+        "Category": "countries"
+    },
+    {
+        "Word": "south africa",
+        "Category": "countries"
+    },
+    {
+        "Word": "Australia",
+        "Category": "countries"
+    },
+    {
+        "Word": "Cuba",
+        "Category": "countries"
+    },
+    {
+        "Word": "Tiger",
+        "Category": "animals"
+    },
+    {
+        "Word": "Rabbit",
+        "Category": "animals"
+    },
+    {
+        "Word": "White shark",
+        "Category": "animals"
+    },
+    {
+        "Word": "whale shark",
+        "Category": "animals"
+    },
+    {
+        "Word": "Fox",
+        "Category": "animals"
+    }
+]

@@ -150,7 +150,15 @@ namespace TheHangMan
                 //LOAD WORD 
                 string theWord = LoadHangmanWord(level, categoryString).ToLower();
                 //convert loaded word to underscored string
-                string currentState = new string('_', theWord.Length);
+                string currentState = GetInitialState(theWord);
+                // Function to get the initial state with spaces
+                string GetInitialState(string word)
+                {
+                    // Replace spaces with spaces, and other characters with underscores
+                    string initialState = new string(word.Select(c => (c == ' ') ? ' ' : '_').ToArray());
+                    return initialState;
+                }
+                // string currentState = new string('_', theWord.Length);
 
                 char[] guessesLetterArray = new char[theWord.Length]; // Reset the guessed letters array
                 Array.Fill(guessesLetterArray, '_'); // Fill the array with underscores
