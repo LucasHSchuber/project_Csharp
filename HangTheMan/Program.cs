@@ -100,16 +100,42 @@ namespace HM
                 }
 
 
-
-                int level;
+                string categoryString;
+                int category;
 
                 while (true)
                 {
-                    Console.WriteLine("Choose a difficulty level");
                     Console.WriteLine($"------");
-                    Console.WriteLine("[Press 1] Easy - (win 6 USD)");
-                    Console.WriteLine("[Press 2] Medium - (win 8 USD)");
-                    Console.WriteLine("[Press 3] Hard - (win 10 USD)");
+                    Console.WriteLine("Choose a category for the Hangman game sequence");
+                    Console.WriteLine("------");
+                    Console.WriteLine("[Press 1] Animals");
+                    Console.WriteLine("[Press 2] Countries");
+                    Console.Write("Choose: ");
+
+                    if (!int.TryParse(Console.ReadLine(), out category) || (category < 1 || category > 2))
+                    {
+                        Console.WriteLine("Invalid input.");
+                    }
+                    else
+                    {
+                        // Convert the chosen category to a string
+                        categoryString = (category == 1) ? "Animals" : "Countries";
+                        break;
+                    }
+                }
+
+                // Now, you can use the chosen categoryString in your code.
+
+
+                int level;
+                while (true)
+                {
+                    Console.WriteLine($"------");
+                    Console.WriteLine("Choose a difficulty level for the Hangman game sequence");
+                    Console.WriteLine($"------");
+                    Console.WriteLine("[Press 1] EASY - win: 6 USD");
+                    Console.WriteLine("[Press 2] MEDIUM - win: 8 USD");
+                    Console.WriteLine("[Press 3] HARD - win: 10 USD");
                     Console.Write("Choose: ");
 
                     if (!int.TryParse(Console.ReadLine(), out level))
@@ -128,9 +154,8 @@ namespace HM
                     }
                 }
 
-
                 //Load word 
-                string theWord = LoadHangmanWord(level).ToLower();
+                string theWord = LoadHangmanWord(level, categoryString).ToLower();
                 //convert loaded word to underscored string
                 string currentState = new string('_', theWord.Length);
 
@@ -169,11 +194,25 @@ namespace HM
                     levelPoints = 10;
                 }
 
+
+                Console.Clear();
+                Console.WriteLine($"------");
+                Console.WriteLine("Game details");
+                Console.WriteLine($"------");
+                Console.WriteLine($"Player: {userName}");
+                Console.WriteLine($"Game level: {levelString}, Category: {categoryString}");
+                Console.WriteLine($"Chance to win: {levelPoints} USD");
+                Console.WriteLine($"Current money: {updUser.Money} USD");
+                Console.WriteLine($"Bettings: {bet} USD ");
+                Console.WriteLine($"");
+                Console.Write($"Press enter to start the game ");
+                Console.ReadLine();
+
+
                 Console.Clear();
                 Console.WriteLine($"----------------------");
                 Console.WriteLine("THE GAME HAS STARTED!");
                 Console.WriteLine($"----------------------");
-                Console.WriteLine($"Player: {userName}, Level: {levelString}, Money: {updUser.Money} - You have bet {bet} USD ");
                 Console.WriteLine($"");
                 Console.WriteLine("Enter your first guess.");
                 Console.WriteLine($"");
@@ -261,7 +300,7 @@ namespace HM
                     {
                         Console.Clear();
                         Console.WriteLine($"----------------------");
-                        Console.WriteLine($"Congratulations! You won! The correct word was: '{theWord.ToUpper()}'.");
+                        Console.WriteLine($"CONGRATULATIONS! You won! The correct word was: '{theWord.ToUpper()}'.");
                         Console.WriteLine($"----------------------");
 
 
@@ -286,9 +325,9 @@ namespace HM
                         currentUser_update.Money += levelPoints;
                         SaveUsers(users);
                         Console.WriteLine($"Winnings:");
-                        Console.WriteLine($"For level '{levelString}': {levelPoints} USD.");
+                        Console.WriteLine($"For level {levelString.ToUpper()}: {levelPoints} USD.");
                         Console.WriteLine($"Bettings: {bet} USD.");
-                        Console.WriteLine($"Total winnings: {bet + levelPoints}");
+                        Console.WriteLine($"Total winnings: {bet + levelPoints} USD");
                         Console.WriteLine($"");
                         Console.WriteLine($"Player: {currentUser_update.Name}");
                         Console.WriteLine($"Money: {currentUser_update.Money} USD");
@@ -300,7 +339,7 @@ namespace HM
                         guessesLetter.Clear();
                         guessesLetterArray = new char[theWord.Length];
                         Array.Fill(guessesLetterArray, '_');
-
+                        currentState = string.Empty;
                         break;
                     }
                     else if (Lives <= 0)
@@ -313,7 +352,14 @@ namespace HM
                             user.Lives = 0;
                             SaveUsers(users_);
                         }
+                        Console.Clear();
+                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"GAME OVER!");
+                        Console.WriteLine($"----------------------");
+                        DrawLives(Lives);
+                        Console.WriteLine($"");
 
+                        // Thread.Sleep(2000);
                         GameOver(theWord, currentState, ref Lives, bet, userName, userMoney);
 
                     }
@@ -333,11 +379,19 @@ namespace HM
                 Console.WriteLine("-------------");
                 Console.WriteLine("PLAYERS:");
                 Console.WriteLine("-------------");
-                int Number = 1;
-                foreach (var user in users)
+                if (users.Count == 0)
                 {
-                    Console.WriteLine($"[{Number}] {user.Name} - Money:{user.Money}, Lives:{user.Lives}");
-                    Number++; //Adding 1 to each message when printing them in console
+                    Console.WriteLine("");
+                    Console.WriteLine("The user list is empty.");
+                }
+                else
+                {
+                    int Number = 1;
+                    foreach (var user in users)
+                    {
+                        Console.WriteLine($"[{Number}] {user.Name} - Money:{user.Money}, Lives:{user.Lives}");
+                        Number++; //Adding 1 to each message when printing them in console
+                    }
                 }
 
                 Console.WriteLine("");
@@ -480,32 +534,39 @@ namespace HM
 
 
             //Loads hangmanword from json-file
-            static string LoadHangmanWord(int level)
+            //Loads hangmanword from json-file
+            static string LoadHangmanWord(int level, string category)
             {
-
                 if (File.Exists(FilePathWord))
                 {
                     List<wordBank> words = LoadWords();
                     Random r = new Random();
-                    List<wordBank> filteredWords;
+                    List<wordBank> filteredWords = words; // Initialize with all words
 
+                    // Category filter
+                    if (!string.IsNullOrEmpty(category) && category.ToLower() != "all")
+                    {
+                        filteredWords = filteredWords.Where(w => w.Category.ToLower() == category.ToLower()).ToList();
+                    }
+
+                    // Apply difficulty
                     if (level == 1) // Easy
                     {
-                        filteredWords = words
+                        filteredWords = filteredWords
                             .Where(w => !w.Word.Contains("z") && !w.Word.Contains("y") && !w.Word.Contains("x"))
                             .Where(w => w.Word.Length <= 5)
                             .ToList();
                     }
                     else if (level == 2) // Medium
                     {
-                        filteredWords = words
+                        filteredWords = filteredWords
                             .Where(w => !w.Word.Contains("z") && !w.Word.Contains("y") && !w.Word.Contains("x"))
                             .Where(w => w.Word.Length > 5 && w.Word.Length <= 7)
                             .ToList();
                     }
                     else if (level == 3) // Hard
                     {
-                        filteredWords = words
+                        filteredWords = filteredWords
                             .Where(w => w.Word.Length > 7 || (w.Word.Length > 4 && (w.Word.Contains("z") || w.Word.Contains("y") || w.Word.Contains("x") || w.Word.Contains("v") || w.Word.Contains("w"))))
                             .ToList();
                     }
@@ -537,6 +598,7 @@ namespace HM
 
 
 
+
             static void StartGameWithZeroLives(string userName, int userLives, int userMoney)
             {
 
@@ -547,15 +609,16 @@ namespace HM
                     Console.Clear();
                     Console.WriteLine($"You are out of lives. You need to buy more lives to play.");
                     Console.WriteLine($"Do you want to buy more lives?");
-                    Console.Write($"Y/N : ");
+                    Console.Write($"Y/N: ");
                     string? purchase = Console.ReadLine();
 
                     if (!String.IsNullOrEmpty(purchase) && (purchase == "y" || purchase == "Y"))
                     {
 
-                        Console.WriteLine(" ");
+                        Console.Clear();
+                        Console.WriteLine($"---------------");
                         Console.WriteLine($"THE LIFE SHOP");
-                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"---------------");
                         Console.WriteLine($"1 life = 1 USD");
                         Console.WriteLine($"");
                         Console.WriteLine($"Money: {currentUser.Money} USD");
@@ -571,7 +634,7 @@ namespace HM
                         else
                         {
                             Console.WriteLine($"Are you sure you want to buy {newLives} lives for {newLives} USD? ");
-                            Console.WriteLine($"You're new balance will be {currentUser.Money - newLives} USD?");
+                            Console.Write($"You're new balance will be {currentUser.Money - newLives} USD? ");
                             Console.Write($"Y/N: ");
                             string? choice = Console.ReadLine();
 
@@ -619,7 +682,6 @@ namespace HM
 
 
 
-
             //Saves a word after putting it in
             static void SaveData(List<wordBank> data)
             {
@@ -645,36 +707,58 @@ namespace HM
 
 
 
-            //adds a word from user input 
+            //adds a word from user input  
             static void AddWord()
             {
+                string category;
+                Console.Write("Place the word in a category: ");
+                Console.WriteLine("------");
+                Console.WriteLine("Animals");
+                Console.WriteLine("Countries");
+                Console.WriteLine("");
 
-                Console.Write("Add a new word: ");
-                string newWord = Console.ReadLine().ToLower();
-                if (!string.IsNullOrWhiteSpace(newWord))
+                while (true)
                 {
+                    Console.Write("Type: ");
+                    category = Console.ReadLine().ToLower();
 
-                    List<wordBank> existingWords = LoadWords();
-
-                    if (!existingWords.Any(w => w.Word.Equals(newWord, StringComparison.OrdinalIgnoreCase)))
+                    if (category.ToLower() != "animals" && category.ToLower() != "countries")
                     {
-                        wordBank word = new wordBank(newWord);
-                        existingWords.Add(word);
-                        SaveData(existingWords);
-                        Console.WriteLine("Word added successfully!");
-                        Console.Write("Press enter to return to menu");
-                        Console.ReadLine();
+                        Console.WriteLine("Invalid input. Spell out the");
                     }
+
+                    Console.Write("Add a new word: ");
+                    string newWord = Console.ReadLine().ToLower();
+
+                    if (!string.IsNullOrWhiteSpace(newWord))
+                    {
+
+                        List<wordBank> existingWords = LoadWords();
+
+                        if (!existingWords.Any(w => w.Word.Equals(newWord, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            wordBank word = new wordBank(newWord, category);
+                            existingWords.Add(word);
+                            SaveData(existingWords);
+                            Console.WriteLine("Word added successfully!");
+                            Console.Write("Press enter to return to the menu");
+                            Console.ReadLine();
+                        }
+                        else
+                        {
+                            Console.WriteLine("The word already exists. Please enter a different word.");
+                        }
+
+                        break; // This is where you should break out of the loop
+                    }
+
                     else
                     {
-                        Console.WriteLine("The word already exists. Please enter a different word.");
+                        Console.WriteLine("Invalid input. The word cannot be empty.");
                     }
                 }
-                else
-                {
-                    Console.WriteLine("Invalid input. The word cannot be empty.");
-                }
             }
+
 
 
 
@@ -765,21 +849,22 @@ namespace HM
 
                     if (currentUser.Money == 0)
                     {
-
+                        Console.WriteLine($"You have no money or lives left!");
+                        Thread.Sleep(2000);
                         oneLastChance(userName, userMoney);
-
+                        return;
                     }
 
                     Console.WriteLine($"Do you want to buy more lives and keep playing?");
-                    Console.Write($"Y/N : ");
+                    Console.Write($"Y/N: ");
                     string? purchase = Console.ReadLine();
 
                     if (!String.IsNullOrEmpty(purchase) && (purchase == "y" || purchase == "Y"))
                     {
-
-                        Console.WriteLine(" ");
+                        Console.Clear();
+                        Console.WriteLine($"---------------");
                         Console.WriteLine($"THE LIFE SHOP");
-                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"---------------");
                         Console.WriteLine($"1 life = 1 USD");
                         Console.WriteLine($"");
                         Console.WriteLine($"Money: {currentUser.Money} USD");
@@ -922,7 +1007,8 @@ namespace HM
 
                 while (true)
                 {
-                    Console.Write("Do you want to make a bet? Y/N? ");
+                    Console.WriteLine("Do you want to make a bet?");
+                    Console.Write($"Y/N: ");
                     string? input = Console.ReadLine();
 
                     User currentUser = users.Find(user => user.Name == userName);
@@ -1121,11 +1207,9 @@ namespace HM
                 //keyord = riddle.Keyword
 
                 Console.Clear();
-                Console.WriteLine($"You have no money or lives left!");
                 Console.WriteLine("");
                 Thread.Sleep(1000);
 
-                Console.WriteLine("");
                 Console.Write("Wait");
                 for (int i = 0; i < 3; i++)
                 {
@@ -1165,17 +1249,17 @@ namespace HM
                 Console.WriteLine("");
                 Thread.Sleep(1000);
 
-                string sentence1 = $"Hangman: 'Hello {userName}'. ";
-                string sentence2 = $"Hangman: 'I can see you have neither any money or lives left HAHAHA'";
+                string sentence1 = $"Hangman: 'Hello {userName}'";
+                string sentence2 = $"Hangman: 'I can see you have neither any money or lives left'";
                 string sentence3 = $"Hangman: 'Well, luckily for you I'm in a good mode today...'";
                 string sentence4 = $"Hangman: 'and I'm willing to offer you a chance to stay a live a little longer'";
                 string sentence5 = $"Hangman: 'Are you interested? Y/N:'";
 
-                string answer_NO = $"{userName}: 'Actually... No...'.";
-                string sentence_NO = $"Hangman: 'HAHAHAHAHA ok then good bye {userName}, maybe I'll see you on the other side'";
+                string answer_NO = $"{userName}: 'No'.";
+                string sentence_NO = $"Hangman: 'HAHAHAHAHA well then, good bye {userName}, I'll see you on the other side'";
                 string sentence_NO2 = $"Hangman: 'HAHAHAHAHAHAHHAHAHHAAHAHAHAHAHAHAHAHAHAHA'";
 
-                string answer_YES = $"{userName}: 'Of course I'm interested in staying alive'";
+                string answer_YES = $"{userName}: 'Yes'";
                 string sentence_YES = $"Hangman: 'Of course you are!'";
                 string sentence_YES2 = $"Hangman: 'If you can guess my riddle, I will give you 10 new lives'";
                 string sentence_YES3 = $"Hangman: 'Get ready! Here comes the riddle'";
@@ -1184,13 +1268,12 @@ namespace HM
                 string sentence_YES_correct1 = $"Hangman: '...I'm impressed'";
                 string sentence_YES_correct2 = $"Hangman: 'Well... I guess I have to keep my word now. Or do I...?'";
                 string sentence_YES_correct3 = $"Hangman: 'Here are 10 new lives'";
-                string sentence_YES_correct4 = $"Hangman: 'See you soon {userName}...'";
+                string sentence_YES_correct4 = $"Hangman: 'You got away this time.'";
+                string sentence_YES_correct5 = $"Hangman: 'But I'll see you soon again {userName}...'";
 
                 string sentence_YES_wrong1 = $"Hangman: 'Ops... That's wrong HAHAHAHA'";
                 string sentence_YES_wrong2 = $"Hangman: 'The answer is {riddle.Answer}!'";
                 string sentence_YES_wrong3 = $"Hangman: 'You're out of the game. Bye bye {userName}!'";
-
-
 
 
 
@@ -1275,7 +1358,6 @@ namespace HM
                             if (!String.IsNullOrEmpty(answer_riddle) && answer_riddle.Contains(riddle.Keyword, StringComparison.OrdinalIgnoreCase))
                             {
 
-
                                 foreach (char letter in sentence_YES_correct1)
                                 {
                                     Console.Write(letter);
@@ -1297,7 +1379,8 @@ namespace HM
                                 //gives user 10 more lives
                                 Console.WriteLine("");
                                 Console.WriteLine("");
-                                Console.WriteLine("Lives: 10");
+                                Console.WriteLine("Hangman has given you 10 new lives");
+                                Console.WriteLine("");
 
                                 List<User> users = LoadUsers(); // Load existing users
                                 User user = users.Find(user => user.Name == userName);
@@ -1308,7 +1391,6 @@ namespace HM
                                     SaveUsers(users);
                                 }
 
-
                                 Thread.Sleep(1000);
                                 foreach (char letter in sentence_YES_correct4)
                                 {
@@ -1316,19 +1398,36 @@ namespace HM
                                     Thread.Sleep(20);
                                 }
                                 Console.ReadLine();
-                                Console.ResetColor();
-                                Console.Clear();
+                                foreach (char letter in sentence_YES_correct5)
+                                {
+                                    Console.Write(letter);
+                                    Thread.Sleep(20);
+                                }
+                                Console.ReadLine();
 
+                                Console.WriteLine("");
+                                Console.WriteLine("The Hangman has kicked you out of the game");
+                                Console.WriteLine("Start the game again to receive your new lives");
+                                Console.WriteLine("");
+                                Console.ReadLine();
 
                                 // Reset guessesLetter List and guessesLetterArray
                                 guessesLetter.Clear();
 
-                                PlayHangman(user.Name, user.Lives, user.Money);
+                                Console.ResetColor();
+                                Console.Clear();
+                                Environment.Exit(0);
+
+
+
+                                // PlayHangman(user.Name, user.Lives, user.Money);
                                 // Environment.Exit(0); //exit game
+                                return;
 
                             }
                             else if (String.IsNullOrEmpty(answer_riddle))
                             {
+                                Console.Write("Invaild input");
 
                             }
                             else
@@ -1353,9 +1452,9 @@ namespace HM
                                 Console.WriteLine("");
                                 removeUser(userName);
                                 Thread.Sleep(1000);
+
                                 Console.ResetColor();
                                 Console.Clear();
-
                                 Environment.Exit(0);
 
                             }
@@ -1547,12 +1646,15 @@ namespace HM
                 Console.WriteLine("RULES");
                 Console.WriteLine("-----------------------");
                 Console.WriteLine("BASICS:");
+                Console.WriteLine("------:");
                 Console.WriteLine("   To play the Hangman game you going to need money and lives.");
                 Console.WriteLine("   If you run out of lives, you can always buy new lives for the money.");
                 Console.WriteLine("BETTING:");
+                Console.WriteLine("------:");
                 Console.WriteLine("   To earn more money, you need to bet before the Hangman game.");
                 Console.WriteLine("   You will either loose or win the betting amount depending on if you win or loose the Hangmsn sequence.");
                 Console.WriteLine("WINNIGS:");
+                Console.WriteLine("------:");
                 Console.WriteLine("   You win money by winning a Hangman sequence.");
                 Console.WriteLine("   For level easy = 6 USD, for medium = 8 USD, for hard = 10 USD.");
                 Console.WriteLine("");
