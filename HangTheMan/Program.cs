@@ -362,7 +362,7 @@ namespace TheHangMan
                         Console.WriteLine($"");
 
                         GameOver(theWord, currentState, ref Lives, bet, userName, userMoney);
-
+                        // break;
                     }
                 }
             }
@@ -1071,8 +1071,9 @@ namespace TheHangMan
 
                             Console.Write($"{userName}: ");
                             string? answer_riddle = Console.ReadLine();
-
-                            if (!String.IsNullOrEmpty(answer_riddle) && answer_riddle.Contains(riddle.Keyword, StringComparison.OrdinalIgnoreCase))
+                            string[] keywords = riddle.Keyword.Split(',');
+                            // if (!String.IsNullOrEmpty(answer_riddle) && answer_riddle.Contains(riddle.Keyword, StringComparison.OrdinalIgnoreCase))
+                            if (!String.IsNullOrEmpty(answer_riddle) && keywords.Any(keyword => answer_riddle.Contains(keyword.Trim(), StringComparison.OrdinalIgnoreCase)))
                             {
 
                                 foreach (char letter in sentence_YES_correct1)

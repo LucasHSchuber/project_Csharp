@@ -98,5 +98,9 @@
     {
         "Word": "kangaroo",
         "Category": "animals"
+    },
+    {
+        "Word": "venezuela",
+        "Category": "countries"
     }
 ]

@@ -6,22 +6,32 @@
     },
     {
         "question": "I am easy to lift, but hard to throw. What am I?",
-        "answer": "A feather",
+        "answer": "a feather",
         "keyword": "feather"
     },
     {
         "question": "What has a neck but no head?",
-        "answer": "A bottle",
+        "answer": "a bottle",
         "keyword": "bottle"
     },
     {
         "question": "Rachel goes to the supermarket and buys 10 tomatoes. Unfortunately, on the way back home, all but 9 get ruined. How many tomatoes are left in a good condition?",
-        "answer": "Nine",
-        "keyword": "nine"
+        "answer": "nine",
+        "keyword": "nine, 9"
     },
     {
         "question": "It belongs to you, but your friends use it more. What is it?",
-        "answer": "Your name",
+        "answer": "your name",
         "keyword": "name"
+    },
+    {
+        "question": "What runs, but never walks. Murmurs, but never talks. Has a bed, but never sleeps. And has a mouth, but never eats?",
+        "answer": "a river",
+        "keyword": "river"
+    },
+    {
+        "question": "If two’s company, and three’s a crowd, what are four and five?",
+        "answer": "nine",
+        "keyword": "nine, 9"
     }
 ]
