@@ -225,62 +225,50 @@ namespace TheHangMan
                 while (currentState.Length > 0)
                 {
 
-                    if (currentState != null)
+                    // if (currentState != null)
+                    // {
+
+                    //USER GUESSING
+                    Console.Write("Enter a letter: ");
+                    string? let1 = Console.ReadLine();
+
+                    //if let1 is not null and include a letter
+                    if (let1 != null && let1.Length == 1 && Char.IsLetter(let1[0]))
                     {
 
-                        //USER GUESSING
-                        Console.Write("Enter a letter: ");
-                        string? let1 = Console.ReadLine();
-
-                        //if let1 is not null and include a letter
-                        if (let1 != null && let1.Length == 1 && Char.IsLetter(let1[0]))
-                        {
-
-                            //if user guess a aldready guessed letter
-                            if (guessesLetter.Contains(let1))
-                            {
-                                Console.Clear();
-                                Console.WriteLine($"----------------------");
-                                Console.WriteLine($"You have aldready guessed '{let1.ToUpper()}'. Guess again. ");
-                                Console.WriteLine($"----------------------");
-
-                                ShowCurrentGameStatus(currentState, Lives);
-                                Console.Write($"Lives: {Lives} ");
-                                LifeAsHeartMethod.LivesAsHeart(Lives);
-                                Console.WriteLine($"");
-                                Console.WriteLine($"");
-
-                            }
-                            else
-                            {
-                                char let1_ = Char.ToLower(let1[0]);
-                                if (theWord.IndexOf(let1_, StringComparison.OrdinalIgnoreCase) != -1)
-
-                                {
-                                    currentState = correctGuess(let1, currentState, ref theWord);
-                                }
-                                else
-                                {
-                                    wrongGuess(let1, ref currentState);
-                                    Lives--;
-                                }
-
-                                //Show amount of lives left to user
-                                DrawLivesMethod.DrawLives(Lives);
-                                Console.Write($"Lives: {Lives} ");
-                                LifeAsHeartMethod.LivesAsHeart(Lives);
-                                Console.WriteLine($"");
-                                Console.WriteLine($"");
-                            }
-                        }
-                        else
+                        //if user guess a aldready guessed letter
+                        if (guessesLetter.Contains(let1))
                         {
                             Console.Clear();
                             Console.WriteLine($"----------------------");
-                            Console.WriteLine("Please enter a valid single letter.");
+                            Console.WriteLine($"You have aldready guessed '{let1.ToUpper()}'. Guess again. ");
                             Console.WriteLine($"----------------------");
 
                             ShowCurrentGameStatus(currentState, Lives);
+                            Console.Write($"Lives: {Lives} ");
+                            LifeAsHeartMethod.LivesAsHeart(Lives);
+                            Console.WriteLine($"");
+                            Console.WriteLine($"");
+
+                        }
+                        else
+                        {
+                            char let1_ = Char.ToLower(let1[0]);
+                            //checking if the user input letter is a part of the original hangman-word.
+                            if (theWord.IndexOf(let1_, StringComparison.OrdinalIgnoreCase) != -1)
+                            {
+                                //correct guess = update currentState
+                                currentState = correctGuess(let1, currentState, ref theWord);
+                            }
+                            else
+                            {
+                                //wrong guess
+                                wrongGuess(let1, ref currentState);
+                                Lives--;
+                            }
+
+                            //Show amount of lives left to user
+                            DrawLivesMethod.DrawLives(Lives);
                             Console.Write($"Lives: {Lives} ");
                             LifeAsHeartMethod.LivesAsHeart(Lives);
                             Console.WriteLine($"");
@@ -289,8 +277,23 @@ namespace TheHangMan
                     }
                     else
                     {
-                        return;
+                        //if not entering a letter
+                        Console.Clear();
+                        Console.WriteLine($"----------------------");
+                        Console.WriteLine("Please enter a valid single letter.");
+                        Console.WriteLine($"----------------------");
+
+                        ShowCurrentGameStatus(currentState, Lives);
+                        Console.Write($"Lives: {Lives} ");
+                        LifeAsHeartMethod.LivesAsHeart(Lives);
+                        Console.WriteLine($"");
+                        Console.WriteLine($"");
                     }
+                    // }
+                    // else
+                    // {
+                    //     return;
+                    // }
                     // if (userInput.Length == userInput_)
                     if (currentState == theWord)
                     {
