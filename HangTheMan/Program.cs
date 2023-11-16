@@ -53,7 +53,7 @@ namespace TheHangMan
                         break;
 
                     case "4":
-                        Rules();
+                        RulesMethod.Rules();
                         break;
 
                     case "5":
@@ -206,7 +206,7 @@ namespace TheHangMan
 
                 DrawLivesMethod.DrawLives(Lives);
                 Console.Write($"Lives: {Lives} ");
-                LivesAsHeart(Lives);
+                LifeAsHeartMethod.LivesAsHeart(Lives);
                 Console.WriteLine($"");
                 Console.WriteLine($"");
 
@@ -235,7 +235,7 @@ namespace TheHangMan
 
                                 ShowCurrentGameStatus(currentState, Lives);
                                 Console.Write($"Lives: {Lives} ");
-                                LivesAsHeart(Lives);
+                                LifeAsHeartMethod.LivesAsHeart(Lives);
                                 Console.WriteLine($"");
                                 Console.WriteLine($"");
 
@@ -257,7 +257,7 @@ namespace TheHangMan
                                 //Show amount of lives left to user
                                 DrawLivesMethod.DrawLives(Lives);
                                 Console.Write($"Lives: {Lives} ");
-                                LivesAsHeart(Lives);
+                                LifeAsHeartMethod.LivesAsHeart(Lives);
                                 Console.WriteLine($"");
                                 Console.WriteLine($"");
                             }
@@ -271,7 +271,7 @@ namespace TheHangMan
 
                             ShowCurrentGameStatus(currentState, Lives);
                             Console.Write($"Lives: {Lives} ");
-                            LivesAsHeart(Lives);
+                            LifeAsHeartMethod.LivesAsHeart(Lives);
                             Console.WriteLine($"");
                             Console.WriteLine($"");
                         }
@@ -774,7 +774,6 @@ namespace TheHangMan
             //if user guess correct letter
             static string correctGuess(string let1, string currentState, ref string theWord)
             {
-
                 // Add a line break after printing the guessed words
                 Console.Clear();
                 Console.WriteLine($"-------------------------------------");
@@ -1004,7 +1003,7 @@ namespace TheHangMan
 
                 DrawLivesMethod.DrawLives(Lives);
                 Console.Write($"Lives: {Lives} ");
-                LivesAsHeart(Lives);
+                LifeAsHeartMethod.LivesAsHeart(Lives);
                 Console.WriteLine($"");
                 Console.WriteLine($"");
 
@@ -1649,52 +1648,34 @@ namespace TheHangMan
                 }
             }
 
-            static void Rules()
-            {
-                Console.Clear();
-                Console.WriteLine("-----------------------");
-                Console.WriteLine("RULES");
-                Console.WriteLine("-----------------------");
-                Console.WriteLine("BASICS:");
-                Console.WriteLine("------:");
-                Console.WriteLine("   To play the Hangman game you going to need money and lives.");
-                Console.WriteLine("   If you run out of lives, you can always buy new lives for the money.");
-                Console.WriteLine("BETTING:");
-                Console.WriteLine("------:");
-                Console.WriteLine("   To earn more money, you need to bet before the Hangman game.");
-                Console.WriteLine("   You will either loose or win the betting amount depending on if you win or loose the Hangmsn sequence.");
-                Console.WriteLine("WINNIGS:");
-                Console.WriteLine("------:");
-                Console.WriteLine("   You win money by winning a Hangman sequence.");
-                Console.WriteLine("   For level easy = 6 USD, for medium = 8 USD, for hard = 10 USD.");
-                Console.WriteLine("");
-                Console.WriteLine("GOOD LUCK!");
-                Console.WriteLine("-----------------------");
+            // static void Rules()
+            // {
+            //     Console.Clear();
+            //     Console.WriteLine("-----------------------");
+            //     Console.WriteLine("RULES");
+            //     Console.WriteLine("-----------------------");
+            //     Console.WriteLine("BASICS:");
+            //     Console.WriteLine("------:");
+            //     Console.WriteLine("   To play the Hangman game you going to need money and lives.");
+            //     Console.WriteLine("   If you run out of lives, you can always buy new lives for the money.");
+            //     Console.WriteLine("BETTING:");
+            //     Console.WriteLine("------:");
+            //     Console.WriteLine("   To earn more money, you need to bet before the Hangman game.");
+            //     Console.WriteLine("   You will either loose or win the betting amount depending on if you win or loose the Hangmsn sequence.");
+            //     Console.WriteLine("WINNIGS:");
+            //     Console.WriteLine("------:");
+            //     Console.WriteLine("   You win money by winning a Hangman sequence.");
+            //     Console.WriteLine("   For level easy = 6 USD, for medium = 8 USD, for hard = 10 USD.");
+            //     Console.WriteLine("");
+            //     Console.WriteLine("GOOD LUCK!");
+            //     Console.WriteLine("-----------------------");
 
 
-                Console.WriteLine("");
-                Console.Write("Press enter to return to menu");
-                Console.ReadLine();
+            //     Console.WriteLine("");
+            //     Console.Write("Press enter to return to menu");
+            //     Console.ReadLine();
 
-
-            }
-
-
-            static void ExitApp()
-            {
-                Console.WriteLine("");
-                Console.Write("Quiting game");
-                for (int i = 0; i < 4; i++)
-                {
-                    Thread.Sleep(400);
-                    Console.Write(".");
-                }
-                Console.WriteLine("");
-                Thread.Sleep(100);
-                Console.WriteLine("Good Bye!");
-                Environment.Exit(0);
-            }
-
+            // }
 
 
 
@@ -1713,7 +1694,7 @@ namespace TheHangMan
             }
 
 
-            public static Riddle GetRandomRiddle()
+            static Riddle GetRandomRiddle()
             {
                 List<Riddle> riddles = LoadRiddles();
                 if (riddles.Count > 0)
@@ -1729,15 +1710,30 @@ namespace TheHangMan
                 }
             }
 
-
-            static void LivesAsHeart(int amount)
+            static void ExitApp()
             {
-
-                for (int i = 0; i < amount; i++)
+                Console.WriteLine("");
+                Console.Write("Quiting game");
+                for (int i = 0; i < 4; i++)
                 {
-                    Console.Write("❤ ");
+                    Thread.Sleep(400);
+                    Console.Write(".");
                 }
+                Console.WriteLine("");
+                Thread.Sleep(100);
+                Console.WriteLine("Good Bye!");
+                Environment.Exit(0);
             }
+
+
+            // static void LivesAsHeart(int amount)
+            // {
+
+            //     for (int i = 0; i < amount; i++)
+            //     {
+            //         Console.Write("❤ ");
+            //     }
+            // }
         }
     }
 }
