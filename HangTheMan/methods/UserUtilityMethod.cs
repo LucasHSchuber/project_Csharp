@@ -33,14 +33,16 @@ namespace TheHangMan
         public static void removeUser(string userName)
         {
             List<User> users = UserUtilityMethod.LoadUsers(); // Load existing users
-                                                              // Find the user with the specified userName
+
+
+            // Find the user with the specified userName
             User userToRemove = users.Find(user => user.Name == userName);
             if (userToRemove != null)
             {
                 // Remove the user from the list
                 users.Remove(userToRemove);
                 // Save the updated list to the JSON file
-                UserUtilityMethod.SaveUsers(users);
+                SaveUsers(users);
                 Console.WriteLine($"User '{userName}' has been removed from the game.");
             }
             else

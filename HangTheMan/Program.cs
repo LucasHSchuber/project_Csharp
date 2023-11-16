@@ -894,7 +894,6 @@ namespace TheHangMan
 
 
 
-
             static void ExitApp()
             {
                 Console.WriteLine("");
