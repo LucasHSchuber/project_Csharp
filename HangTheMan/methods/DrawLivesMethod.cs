@@ -127,9 +127,9 @@ namespace HangTheMan.methods
                     break;
                 case 1:
                     Console.WriteLine("   |-------------------*                           ");
-                    Console.WriteLine("   |  /               |      |--------------|   ");
+                    Console.WriteLine("   |  /                |     |--------------|   ");
                     Console.WriteLine("   | /               (oo) ---| LAST CHANCE! |   ");
-                    Console.WriteLine("   |                --||\\   |______________|   ");
+                    Console.WriteLine("   |                --||\\    |______________|   ");
                     Console.WriteLine("   |                  ||              ");
                     Console.WriteLine("   |                 /  \\");
                     Console.WriteLine("   |");

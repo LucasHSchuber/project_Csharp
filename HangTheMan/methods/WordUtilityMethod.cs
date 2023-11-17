@@ -33,25 +33,45 @@ namespace TheHangMan
         //adds a word from user input  
         public static void AddWord()
         {
+            Console.Clear();
             string category;
+            Console.WriteLine($"------------------");
+            Console.WriteLine("ADD NEW WORD");
+            Console.WriteLine($"------------------");
             Console.WriteLine("");
             Console.WriteLine("Place the word in a category: ");
-            Console.WriteLine("------");
+            Console.WriteLine("");
             Console.WriteLine("Animals");
+            Console.WriteLine("Cities");
             Console.WriteLine("Countries");
+            Console.WriteLine("Objects");
             Console.WriteLine("");
 
             while (true)
             {
-                Console.Write("Type: ");
+                Console.Write("Type in category name: ");
                 category = Console.ReadLine().ToLower();
 
-                if (category.ToLower() != "animals" && category.ToLower() != "countries")
+                if (category.ToLower() != "animals" && category.ToLower() != "countries" && category.ToLower() != "cities" && category.ToLower() != "objects")
                 {
-                    Console.WriteLine("Invalid input. Spell out the");
+                    Console.WriteLine("Invalid input. Spell out the cateogry name.");
                 }
+                else
+                {
+                    break;
+                }
+            }
 
-                Console.Write("Add a new word: ");
+            Console.WriteLine("");
+            Console.WriteLine("----");
+            Console.WriteLine($"Ok!");
+            Console.WriteLine($"Category: {category}");
+            Console.WriteLine("");
+
+            while (true)
+            {
+
+                Console.Write("Add the new word: ");
                 string newWord = Console.ReadLine().ToLower();
 
                 if (!string.IsNullOrWhiteSpace(newWord))
@@ -64,16 +84,19 @@ namespace TheHangMan
                         wordBank word = new wordBank(newWord, category);
                         existingWords.Add(word);
                         SaveWord(existingWords);
+                        Console.WriteLine("");
+                        Console.WriteLine("----");
                         Console.WriteLine("Word added successfully!");
                         Console.Write("Press enter to return to the menu");
                         Console.ReadLine();
+                        break;
                     }
                     else
                     {
                         Console.WriteLine("The word already exists. Please enter a different word.");
                     }
 
-                    break; // This is where you should break out of the loop
+                    break;
                 }
 
                 else
@@ -104,21 +127,21 @@ namespace TheHangMan
                 if (level == 1) // Easy
                 {
                     filteredWords = filteredWords
-                        .Where(w => !w.Word.Contains("z") && !w.Word.Contains("y") && !w.Word.Contains("x"))
+                        .Where(w => !w.Word.Contains("z") && !w.Word.Contains("y") && !w.Word.Contains("x") && !w.Word.Contains("q") && !w.Word.Contains("w") && !w.Word.Contains("v"))
                         .Where(w => w.Word.Length <= 5)
                         .ToList();
                 }
                 else if (level == 2) // Medium
                 {
                     filteredWords = filteredWords
-                        .Where(w => !w.Word.Contains("z") && !w.Word.Contains("y") && !w.Word.Contains("x"))
-                        .Where(w => w.Word.Length > 5 && w.Word.Length <= 7)
+                        .Where(w => w.Word.Contains("z") && !w.Word.Contains("x"))
+                        .Where(w => w.Word.Length > 3 && w.Word.Length <= 7)
                         .ToList();
                 }
                 else if (level == 3) // Hard
                 {
                     filteredWords = filteredWords
-                        .Where(w => w.Word.Length > 7 || (w.Word.Length > 4 && (w.Word.Contains("z") || w.Word.Contains("y") || w.Word.Contains("x") || w.Word.Contains("v") || w.Word.Contains("w"))))
+                        .Where(w => w.Word.Length > 7 || (w.Word.Length > 5 && (w.Word.Contains("z") || w.Word.Contains("x") || w.Word.Contains("v") || w.Word.Contains("w"))))
                         .ToList();
                 }
                 else

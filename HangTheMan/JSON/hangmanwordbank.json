@@ -102,5 +102,65 @@
     {
         "Word": "venezuela",
         "Category": "countries"
+    },
+    {
+        "Word": "paraguay",
+        "Category": "countries"
+    },
+    {
+        "Word": "worm",
+        "Category": "animals"
+    },
+    {
+        "Word": "aligator",
+        "Category": "animals"
+    },
+    {
+        "Word": "bat",
+        "Category": "animals"
+    },
+    {
+        "Word": "bighorn sheep",
+        "Category": "animals"
+    },
+    {
+        "Word": "jellyfish",
+        "Category": "animals"
+    },
+    {
+        "Word": "dog",
+        "Category": "animals"
+    },
+    {
+        "Word": "cat",
+        "Category": "animals"
+    },
+    {
+        "Word": "china",
+        "Category": "countries"
+    },
+    {
+        "Word": "ulaanbaatar",
+        "Category": "cities"
+    },
+    {
+        "Word": "lima",
+        "Category": "cities"
+    },
+    {
+        "Word": "berlin",
+        "Category": "cities"
+    },
+    {
+        "Word": "television",
+        "Category": "objects"
+    },
+    {
+        "Word": "doormat",
+        "Category": "objects"
+    },
+    {
+        "Word": "bike",
+        "Category": "objects"
     }
 ]

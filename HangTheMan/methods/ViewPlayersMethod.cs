@@ -17,11 +17,12 @@ namespace TheHangMan
 
             Console.Clear();
             Console.WriteLine("-------------");
-            Console.WriteLine("PLAYERS:");
+            Console.WriteLine("PLAYERS");
             Console.WriteLine("-------------");
+            Console.WriteLine("");
+
             if (users.Count == 0)
             {
-                Console.WriteLine("");
                 Console.WriteLine("The user list is empty.");
             }
             else
@@ -29,7 +30,7 @@ namespace TheHangMan
                 int Number = 1;
                 foreach (var user in users)
                 {
-                    Console.WriteLine($"[{Number}] {user.Name} - Money:{user.Money}, Lives:{user.Lives}");
+                    Console.WriteLine($"[{Number}]. {user.Name} - Money:{user.Money}, Lives:{user.Lives}");
                     Number++; //Adding 1 to each message when printing them in console
                 }
             }

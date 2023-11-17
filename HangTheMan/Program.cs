@@ -35,7 +35,7 @@ namespace TheHangMan
             {
                 DisplayMenu();
 
-                Console.Write("Choose: ");
+                Console.Write("Select an option: ");
                 string? choice = Console.ReadLine();
 
                 switch (choice)
@@ -45,15 +45,15 @@ namespace TheHangMan
                         break;
 
                     case "2":
-                        WordUtilityMethod.AddWord();
-                        break;
-
-                    case "3":
                         ViewPlayersMethod.ViewPlayers();
                         break;
 
-                    case "4":
+                    case "3":
                         RulesMethod.Rules();
+                        break;
+
+                    case "4":
+                        WordUtilityMethod.AddWord();
                         break;
 
                     case "5":
@@ -101,18 +101,20 @@ namespace TheHangMan
                     Console.WriteLine($"------");
                     Console.WriteLine("Choose a category for the Hangman game sequence");
                     Console.WriteLine("------");
-                    Console.WriteLine("[Press 1] Animals");
-                    Console.WriteLine("[Press 2] Countries");
+                    Console.WriteLine("[1]. Animals");
+                    Console.WriteLine("[2]. Cities");
+                    Console.WriteLine("[3]. Countries");
+                    Console.WriteLine("[4]. Objects");
                     Console.Write("Choose: ");
 
-                    if (!int.TryParse(Console.ReadLine(), out category) || (category < 1 || category > 2))
+                    if (!int.TryParse(Console.ReadLine(), out category) || (category < 1 || category > 4))
                     {
                         Console.WriteLine("Invalid input.");
                     }
                     else
                     {
                         // Convert the chosen category to a string
-                        categoryString = (category == 1) ? "Animals" : "Countries";
+                        categoryString = (category == 1) ? "Animals" : (category == 2) ? "Cities" : (category == 3) ? "Countries" : "Objects";
                         break;
                     }
                 }
@@ -126,9 +128,9 @@ namespace TheHangMan
                     Console.WriteLine($"------");
                     Console.WriteLine("Choose a difficulty level for the Hangman game sequence");
                     Console.WriteLine($"------");
-                    Console.WriteLine("[Press 1] EASY - win: 6 USD - (max bet: 5 USD)");
-                    Console.WriteLine("[Press 2] MEDIUM - win: 8 USD - (max bet: 10 USD)");
-                    Console.WriteLine("[Press 3] HARD - win: 10 USD - (max bet: unlimited)");
+                    Console.WriteLine("[1]. EASY - win: 6 USD - (max bet: 5 USD)");
+                    Console.WriteLine("[2]. MEDIUM - win: 8 USD - (max bet: 10 USD)");
+                    Console.WriteLine("[3]. HARD - win: 10 USD - (max bet: unlimited)");
                     Console.Write("Choose: ");
 
                     if (!int.TryParse(Console.ReadLine(), out level))
@@ -206,13 +208,17 @@ namespace TheHangMan
 
                 //GAME HAS STARTED
                 Console.Clear();
-                Console.WriteLine($"----------------------");
+                Console.WriteLine($"------------------");
                 Console.WriteLine("THE GAME HAS STARTED!");
-                Console.WriteLine($"----------------------");
+                Console.WriteLine($"------------------");
                 Console.WriteLine($"");
                 Console.WriteLine("Enter your first guess.");
+
+                // DISPLAY CURRENT WORD - CURRENT PROGRESS
                 Console.WriteLine($"");
-                Console.WriteLine($"{currentState}");
+                Console.Write($"WORD:  ");
+                Console.Write(currentState.ToUpper());
+                Console.WriteLine($"");
                 Console.WriteLine($"");
 
                 DrawLivesMethod.DrawLives(Lives);
@@ -229,7 +235,10 @@ namespace TheHangMan
                     // {
 
                     //USER GUESSING
-                    Console.Write("Enter a letter: ");
+                    Console.Write("Guess a letter: ");
+                    Console.ForegroundColor = ConsoleColor.Yellow; // Set color for the underscore
+                    Console.Write("_");
+                    Console.ResetColor(); // Reset color to default
                     string? let1 = Console.ReadLine();
 
                     //if let1 is not null and include a letter
@@ -240,9 +249,9 @@ namespace TheHangMan
                         if (guessesLetter.Contains(let1))
                         {
                             Console.Clear();
-                            Console.WriteLine($"----------------------");
+                            Console.WriteLine($"------------------");
                             Console.WriteLine($"You have aldready guessed '{let1.ToUpper()}'. Guess again. ");
-                            Console.WriteLine($"----------------------");
+                            Console.WriteLine($"------------------");
 
                             ShowCurrentGameStatus(currentState, Lives);
                             Console.Write($"Lives: {Lives} ");
@@ -279,9 +288,9 @@ namespace TheHangMan
                     {
                         //if not entering a letter
                         Console.Clear();
-                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"------------------");
                         Console.WriteLine("Please enter a valid single letter.");
-                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"------------------");
 
                         ShowCurrentGameStatus(currentState, Lives);
                         Console.Write($"Lives: {Lives} ");
@@ -298,9 +307,21 @@ namespace TheHangMan
                     if (currentState == theWord)
                     {
                         Console.Clear();
-                        Console.WriteLine($"----------------------");
-                        Console.WriteLine($"CONGRATULATIONS! You won! The correct word was: '{theWord.ToUpper()}'.");
-                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"------------------");
+                        Console.WriteLine($"CONGRATULATIONS!");
+                        Console.WriteLine($"------------------");
+                        Console.WriteLine("");
+                        Console.WriteLine($"You won! The correct word was: '{theWord.ToUpper()}'");
+                        Console.WriteLine("");
+                        Console.WriteLine("   |-------------------                           ");
+                        Console.WriteLine("   |  /                          ");
+                        Console.WriteLine("   | /                        ");
+                        Console.WriteLine("   |                            ");
+                        Console.WriteLine("   |                 (^^)             ");
+                        Console.WriteLine("   |                 \\||/        ");
+                        Console.WriteLine("   |                  ||            ");
+                        Console.WriteLine("   |                 /  \\          ");
+                        Console.WriteLine("----------------------------       ");
 
                         //IF USER HAS MADE A BET - ADD IT TO USER
                         if (bet > 0)
@@ -322,14 +343,16 @@ namespace TheHangMan
                         currentUser_update.Lives = Lives;
                         currentUser_update.Money += levelPoints;
                         UserUtilityMethod.SaveUsers(users);
+                        Console.WriteLine($"");
                         Console.WriteLine($"Winnings:");
-                        Console.WriteLine($"For level {levelString.ToUpper()}: {levelPoints} USD.");
-                        Console.WriteLine($"Bettings: {bet} USD.");
+                        Console.WriteLine($"For level {levelString.ToUpper()}: {levelPoints} USD");
+                        Console.WriteLine($"Bettings: {bet} USD");
                         Console.WriteLine($"Total winnings: {bet + levelPoints} USD");
                         Console.WriteLine($"");
                         Console.WriteLine($"Player: {currentUser_update.Name}");
                         Console.WriteLine($"Money: {currentUser_update.Money} USD");
                         Console.WriteLine($"Lives: {new_Lives}");
+                        Console.WriteLine($"");
                         Console.WriteLine($"----------------------");
                         Console.Write($"Press enter to return to menu");
                         Console.ReadLine();
@@ -351,15 +374,16 @@ namespace TheHangMan
                             UserUtilityMethod.SaveUsers(users_);
                         }
                         Console.Clear();
-                        Console.WriteLine($"----------------------");
-                        Console.WriteLine($"GAME OVER!");
-                        Console.WriteLine($"----------------------");
-                        Console.WriteLine($"");
-                        Console.WriteLine($"");
-                        Console.WriteLine($"");
-                        Console.WriteLine($"");
-                        DrawLivesMethod.DrawLives(Lives);
-                        Console.WriteLine($"");
+                        // Console.WriteLine($"------------------");
+                        // Console.WriteLine($"GAME OVER!");
+                        // Console.WriteLine($"------------------");
+                        // Console.WriteLine($"");
+                        // Console.WriteLine($"Oh no!");
+                        // Console.WriteLine($"");
+                        // Console.WriteLine($"");
+                        // DrawLivesMethod.DrawLives(Lives);
+                        // Console.WriteLine($"");
+                        // Console.WriteLine($"");
 
                         GameOver(theWord, currentState, ref Lives, bet, userName, userMoney);
                         // break;
@@ -375,25 +399,31 @@ namespace TheHangMan
             {
 
                 Console.Clear();
-                Console.WriteLine($"--------------");
-                Console.WriteLine($"WELCOME!");
+                Console.WriteLine($"- - - - - - - - - - - - - - - -");
+                Console.WriteLine($"          Hangman Game         ");
+                Console.WriteLine($"- - - - - - - - - - - - - - - -");
                 Console.WriteLine($"");
-                Console.WriteLine($"1. Play Hangman");
-                Console.WriteLine($"2. Add new word");
-                Console.WriteLine($"3. Players");
-                Console.WriteLine($"4. Rules");
-                Console.WriteLine($"5. Quit game");
+                Console.WriteLine($"[1]. Play Hangman");
+                Console.WriteLine($"[2]. Players");
+                Console.WriteLine($"[3]. Rules");
+                Console.WriteLine($"[4]. Add new word");
+                Console.WriteLine($"[5]. Quit game");
                 Console.WriteLine($"");
                 Console.WriteLine($"--------------");
             }
+
+
             static void GameDetails(string userName, string levelString, string categoryString, int levelPoints, int updUserMoney, int bet)
             {
                 Console.Clear();
-                Console.WriteLine($"------");
-                Console.WriteLine("Game details");
-                Console.WriteLine($"------");
+                Console.WriteLine($"------------------");
+                Console.WriteLine("GAME DETAILS");
+                Console.WriteLine($"------------------");
+                Console.WriteLine($"");
                 Console.WriteLine($"Player: {userName}");
-                Console.WriteLine($"Game level: {levelString}, Category: {categoryString}");
+                Console.WriteLine($"Level: {levelString}");
+                Console.WriteLine($"Category: {categoryString}");
+                Console.WriteLine($"");
                 Console.WriteLine($"Chance to win: {levelPoints} USD");
                 Console.WriteLine($"Current money: {updUserMoney} USD");
                 Console.WriteLine($"Bettings: {bet} USD ");
@@ -454,9 +484,10 @@ namespace TheHangMan
                 users = UserUtilityMethod.LoadUsers();
 
                 Console.Clear();
-                Console.WriteLine("-------------");
-                Console.WriteLine("PLAYERS:");
-                Console.WriteLine("-------------");
+                Console.WriteLine($"------------------");
+                Console.WriteLine("PLAY HANGMAN");
+                Console.WriteLine($"------------------");
+                Console.WriteLine("");
                 //Displays all player in game
                 int Number = 1;
                 foreach (var user in users)
@@ -467,7 +498,7 @@ namespace TheHangMan
                 Console.WriteLine("");
                 Console.WriteLine("['N'] - Create new player");
                 Console.WriteLine("");
-                Console.WriteLine("-------------");
+                Console.WriteLine($"------------------");
                 Console.WriteLine("Select a player by entering the corresponding number");
                 Console.Write("Choose: ");
                 string? choice = Console.ReadLine();
@@ -489,7 +520,7 @@ namespace TheHangMan
             static void SelectedPlayer(int index)
             {
                 // Console.Clear();
-                Console.WriteLine($"-------------------------------");
+                Console.WriteLine($"------------------");
                 Console.WriteLine($"Player: {users[index].Name}");
                 Console.WriteLine($"Money: {users[index].Money} USD");
                 Console.WriteLine($"Lives: {users[index].Lives}");
@@ -531,10 +562,10 @@ namespace TheHangMan
                     {
 
                         Console.Clear();
-                        Console.WriteLine($"---------------");
+                        Console.WriteLine($"------------------");
                         Console.WriteLine($"THE LIFE SHOP");
-                        Console.WriteLine($"---------------");
-                        Console.WriteLine($"1 life = 1 USD");
+                        Console.WriteLine($"------------------");
+                        Console.WriteLine($"1 ❤ = 1 USD");
                         Console.WriteLine($"");
                         Console.WriteLine($"Money: {currentUser.Money} USD");
                         Console.WriteLine($"");
@@ -549,15 +580,18 @@ namespace TheHangMan
                         else
                         {
                             Console.WriteLine($"Are you sure you want to buy {newLives} lives for {newLives} USD? ");
-                            Console.Write($"You're new balance will be {currentUser.Money - newLives} USD? ");
+                            Console.WriteLine($"You're new balance will be {currentUser.Money - newLives} USD? ");
                             Console.Write($"Y/N: ");
                             string? choice = Console.ReadLine();
 
                             if (!String.IsNullOrEmpty(choice) && (choice == "y" || choice == "Y"))
                             {
-                                Console.Clear();
+                                Console.WriteLine($"");
                                 Console.WriteLine($"You have bought {newLives} new lives!");
+                                Console.WriteLine($"Press enter to start the game.");
+                                Console.ReadLine();
 
+                                Console.Clear();
                                 currentUser.Lives = newLives;
                                 if (currentUser != null)
                                 {
@@ -583,9 +617,9 @@ namespace TheHangMan
                     else if (!String.IsNullOrEmpty(purchase) && purchase == "n" || purchase == "N")
                     {
                         Console.Clear();
-                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"------------------");
                         Console.WriteLine($"Exiting game.");
-                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"------------------");
                         Console.ReadLine();
 
                         Environment.Exit(0);
@@ -601,9 +635,9 @@ namespace TheHangMan
             {
                 // Add a line break after printing the guessed words
                 Console.Clear();
-                Console.WriteLine($"-------------------------------------");
+                Console.WriteLine($"------------------");
                 Console.WriteLine($"CORRECT! The letter '{let1.ToUpper()}' is in the word!");
-                Console.WriteLine($"-------------------------------------");
+                Console.WriteLine($"------------------");
                 guessesLetter.Add(let1);
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
 
@@ -628,10 +662,11 @@ namespace TheHangMan
                 }
                 string updatedStateString = new string(updatedState);
 
-                // userInput = userInput.Replace(let1, "_");
-
+                // DISPLAY CURRENT WORD - CURRENT PROGRESS
                 Console.WriteLine($"");
-                Console.WriteLine(updatedStateString.ToUpper());
+                Console.Write($"WORD:  ");
+                Console.Write(updatedStateString.ToUpper());
+                Console.WriteLine($"");
                 Console.WriteLine($"");
 
                 // userInput = LoadWord(userInput);
@@ -644,9 +679,9 @@ namespace TheHangMan
             static void wrongGuess(string let1, ref string currentState)
             {
                 Console.Clear();
-                Console.WriteLine($"-------------------------------------");
+                Console.WriteLine($"------------------");
                 Console.WriteLine($"WRONG! The letter '{let1.ToUpper()}' is not in the word");
-                Console.WriteLine($"-------------------------------------");
+                Console.WriteLine($"------------------");
                 // var guessesLetter = new List<string>();
                 guessesLetter.Add(let1);
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
@@ -660,8 +695,11 @@ namespace TheHangMan
                 // Add a line break after printing the guessed words
                 Console.WriteLine();
 
+                // DISPLAY CURRENT WORD - CURRENT PROGRESS
                 Console.WriteLine($"");
-                Console.WriteLine(currentState.ToUpper());
+                Console.Write($"WORD:  ");
+                Console.Write(currentState.ToUpper());
+                Console.WriteLine($"");
                 Console.WriteLine($"");
 
             }
@@ -676,20 +714,22 @@ namespace TheHangMan
                 while (true)
                 {
                     Console.Clear();
-                    Console.WriteLine($"----------------------");
+
+                    Console.WriteLine($"------------------");
                     Console.WriteLine($"GAME OVER!");
-                    Console.WriteLine($"----------------------");
+                    Console.WriteLine($"------------------");
+                    Console.WriteLine($"");
+                    Console.WriteLine($"Oh no!");
                     Console.WriteLine($"");
                     Console.WriteLine($"");
-                    Console.WriteLine($"");
-                    Console.WriteLine($"");
-                    // Thread.Sleep(2000);
                     DrawLivesMethod.DrawLives(Lives);
+                    Console.WriteLine($"");
+                    Console.WriteLine($"");
 
                     if (currentUser.Money == 0)
                     {
                         Console.WriteLine($"You have no money or lives left!");
-                        Thread.Sleep(2000);
+                        Thread.Sleep(2500);
                         oneLastChance(userName, userMoney);
                         return;
                     }
@@ -701,10 +741,10 @@ namespace TheHangMan
                     if (!String.IsNullOrEmpty(purchase) && (purchase == "y" || purchase == "Y"))
                     {
                         Console.Clear();
-                        Console.WriteLine($"---------------");
+                        Console.WriteLine($"------------------");
                         Console.WriteLine($"THE LIFE SHOP");
-                        Console.WriteLine($"---------------");
-                        Console.WriteLine($"1 life = 1 USD");
+                        Console.WriteLine($"------------------");
+                        Console.WriteLine($"1 ❤ = 1 USD");
                         Console.WriteLine($"");
                         Console.WriteLine($"Money: {currentUser.Money} USD");
                         Console.WriteLine($"");
@@ -755,10 +795,9 @@ namespace TheHangMan
                     else if (!String.IsNullOrEmpty(purchase) && purchase == "n" || purchase == "N")
                     {
                         Console.Clear();
-                        Console.WriteLine($"----------------------");
-                        Console.WriteLine($"THE END! Thanks for playing.");
-                        Console.WriteLine($"The correct word was: '{theWord.ToUpper()}'.");
-                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"------------------");
+                        Console.WriteLine($"THE END!    ");
+                        Console.WriteLine($"------------------");
 
                         User currentUser_ = users.Find(user => user.Name == userName);
 
@@ -769,11 +808,14 @@ namespace TheHangMan
                             UserUtilityMethod.SaveUsers(users); // Save the changes immediately
                         }
 
+                        Console.WriteLine($"");
+                        Console.WriteLine($"The correct word was: '{theWord.ToUpper()}'");
+                        Console.WriteLine($"");
                         Console.WriteLine($"You lost your bet of {bet} USD!");
                         Console.WriteLine($"Player: {currentUser_.Name}");
                         Console.WriteLine($"Money: {currentUser_.Money} USD");
                         Console.WriteLine($"Lives: {currentUser_.Lives}");
-                        Console.WriteLine($"----------------------");
+                        Console.WriteLine($"------------------");
                         Console.Write($"Press enter to exit.");
                         Console.ReadLine();
                         ExitApp();
@@ -799,8 +841,11 @@ namespace TheHangMan
                 // Add a line break after printing the guessed words
                 Console.WriteLine();
 
+                // DISPLAY CURRENT WORD - CURRENT PROGRESS
                 Console.WriteLine($"");
-                Console.WriteLine(currentState.ToUpper());
+                Console.Write($"WORD:  ");
+                Console.Write(currentState.ToUpper());
+                Console.WriteLine($"");
                 Console.WriteLine($"");
                 DrawLivesMethod.DrawLives(Lives);
 
@@ -812,9 +857,9 @@ namespace TheHangMan
             static void GetMoreLives(string currentState, int Lives)
             {
                 Console.Clear();
-                Console.WriteLine($"-------------------------------------");
+                Console.WriteLine($"------------------");
                 Console.WriteLine($"LET'S GO!");
-                Console.WriteLine($"-------------------------------------");
+                Console.WriteLine($"------------------");
 
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
 
@@ -827,8 +872,11 @@ namespace TheHangMan
                 // Add a line break after printing the guessed words
                 Console.WriteLine();
 
+                // DISPLAY CURRENT WORD - CURRENT PROGRESS
                 Console.WriteLine($"");
-                Console.WriteLine(currentState.ToUpper());
+                Console.Write($"WORD:  ");
+                Console.Write(currentState.ToUpper());
+                Console.WriteLine($"");
                 Console.WriteLine($"");
 
                 DrawLivesMethod.DrawLives(Lives);
@@ -873,7 +921,8 @@ namespace TheHangMan
                         }
                         else
                         {
-                            // Console.Clear();
+
+                            Console.WriteLine("");
                             Console.WriteLine($"You have bet {bets} USD.");
                             currentUser.Money -= bets;
                             UserUtilityMethod.SaveUsers(users); // Save the changes immediately
@@ -886,6 +935,7 @@ namespace TheHangMan
                     else if (!string.IsNullOrEmpty(input) && (input == "n" || input == "N"))
                     {
                         int bets = 0;
+                        Console.WriteLine("");
                         Console.WriteLine("You have bet 0 USD.");
                         Console.Write($"Press enter to continue ");
                         Console.ReadLine();
@@ -914,6 +964,16 @@ namespace TheHangMan
 
 
 
+
+
+            static void PrintDialogue(string sentence)
+            {
+                foreach (char letter in sentence)
+                {
+                    Console.Write(letter);
+                    Thread.Sleep(15);
+                }
+            }
 
 
             //The very last change
@@ -972,9 +1032,9 @@ namespace TheHangMan
                 string sentence4 = $"Hangman: 'and I'm willing to offer you a chance to stay a live a little longer'";
                 string sentence5 = $"Hangman: 'Are you interested? Y/N:'";
 
-                string answer_NO = $"{userName}: 'No'.";
+                string answer_NO = $"{userName}: 'No'";
                 string sentence_NO = $"Hangman: 'HAHAHAHAHA well then, good bye {userName}, I'll see you on the other side'";
-                string sentence_NO2 = $"Hangman: 'HAHAHAHAHAHAHHAHAHHAAHAHAHAHAHAHAHAHAHAHA'";
+                string sentence_NO2 = $"Hangman: 'HAHAHAHAHAHAHHAHAHHAAHAHAHAHAHAHAHAHAHAHA............'";
 
                 string answer_YES = $"{userName}: 'Yes'";
                 string sentence_YES = $"Hangman: 'Of course you are!'";
@@ -994,38 +1054,16 @@ namespace TheHangMan
 
 
 
-
-                foreach (char letter in sentence1)
-                {
-                    Console.Write(letter);
-                    Thread.Sleep(20);
-                }
+                PrintDialogue(sentence1);
                 Console.ReadLine();
-
-                foreach (char letter in sentence2)
-                {
-                    Console.Write(letter);
-                    Thread.Sleep(20);
-                }
+                PrintDialogue(sentence2);
                 Console.ReadLine();
-
-                foreach (char letter in sentence3)
-                {
-                    Console.Write(letter);
-                    Thread.Sleep(20);
-                }
-                Console.WriteLine("");
-                foreach (char letter in sentence4)
-                {
-                    Console.Write(letter);
-                    Thread.Sleep(20);
-                }
+                PrintDialogue(sentence3);
                 Console.ReadLine();
-                foreach (char letter in sentence5)
-                {
-                    Console.Write(letter);
-                    Thread.Sleep(20);
-                }
+                PrintDialogue(sentence4);
+                Console.ReadLine();
+                PrintDialogue(sentence5);
+
 
                 while (true)
                 {
@@ -1034,41 +1072,21 @@ namespace TheHangMan
                     //if chance is taken
                     if (!String.IsNullOrEmpty(answer) && (answer == "Y" || answer == "y"))
                     {
-                        foreach (char letter in answer_YES)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        // Console.WriteLine("");
+
+
+                        PrintDialogue(answer_YES);
                         Console.ReadLine();
-                        foreach (char letter in sentence_YES)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
+                        PrintDialogue(sentence_YES);
                         Console.ReadLine();
-                        foreach (char letter in sentence_YES2)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
+                        PrintDialogue(sentence_YES2);
                         Console.ReadLine();
-                        foreach (char letter in sentence_YES3)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
+                        PrintDialogue(sentence_YES3);
                         Console.ReadLine();
-                        foreach (char letter in sentence_YES4)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
+                        PrintDialogue(sentence_YES4);
                         Console.WriteLine("");
 
                         while (true)
                         {
-
                             Console.Write($"{userName}: ");
                             string? answer_riddle = Console.ReadLine();
                             string[] keywords = riddle.Keyword.Split(',');
@@ -1076,23 +1094,11 @@ namespace TheHangMan
                             if (!String.IsNullOrEmpty(answer_riddle) && keywords.Any(keyword => answer_riddle.Contains(keyword.Trim(), StringComparison.OrdinalIgnoreCase)))
                             {
 
-                                foreach (char letter in sentence_YES_correct1)
-                                {
-                                    Console.Write(letter);
-                                    Thread.Sleep(20);
-                                }
+                                PrintDialogue(sentence_YES_correct1);
                                 Console.ReadLine();
-                                foreach (char letter in sentence_YES_correct2)
-                                {
-                                    Console.Write(letter);
-                                    Thread.Sleep(20);
-                                }
+                                PrintDialogue(sentence_YES_correct2);
                                 Console.ReadLine();
-                                foreach (char letter in sentence_YES_correct3)
-                                {
-                                    Console.Write(letter);
-                                    Thread.Sleep(20);
-                                }
+                                PrintDialogue(sentence_YES_correct3);
 
                                 //gives user 10 more lives
                                 Console.WriteLine("");
@@ -1110,17 +1116,11 @@ namespace TheHangMan
                                 }
 
                                 Thread.Sleep(1000);
-                                foreach (char letter in sentence_YES_correct4)
-                                {
-                                    Console.Write(letter);
-                                    Thread.Sleep(20);
-                                }
+
+
+                                PrintDialogue(sentence_YES_correct4);
                                 Console.ReadLine();
-                                foreach (char letter in sentence_YES_correct5)
-                                {
-                                    Console.Write(letter);
-                                    Thread.Sleep(20);
-                                }
+                                PrintDialogue(sentence_YES_correct5);
                                 Console.ReadLine();
 
                                 Console.WriteLine("");
@@ -1136,8 +1136,6 @@ namespace TheHangMan
                                 Console.Clear();
                                 Environment.Exit(0);
 
-
-
                                 // PlayHangman(user.Name, user.Lives, user.Money);
                                 // Environment.Exit(0); //exit game
                                 return;
@@ -1150,23 +1148,14 @@ namespace TheHangMan
                             }
                             else
                             {
-                                foreach (char letter in sentence_YES_wrong1)
-                                {
-                                    Console.Write(letter);
-                                    Thread.Sleep(20);
-                                }
+
+                                PrintDialogue(sentence_YES_wrong1);
                                 Console.ReadLine();
-                                foreach (char letter in sentence_YES_wrong2)
-                                {
-                                    Console.Write(letter);
-                                    Thread.Sleep(20);
-                                }
+                                PrintDialogue(sentence_YES_wrong2);
                                 Console.ReadLine();
-                                foreach (char letter in sentence_YES_wrong3)
-                                {
-                                    Console.Write(letter);
-                                    Thread.Sleep(20);
-                                }
+                                PrintDialogue(sentence_YES_wrong3);
+
+
                                 Console.WriteLine("");
                                 UserUtilityMethod.removeUser(userName);
                                 Thread.Sleep(1000);
@@ -1180,23 +1169,14 @@ namespace TheHangMan
                     }
                     else if (!String.IsNullOrEmpty(answer) && (answer == "N" || answer == "n"))
                     {
-                        foreach (char letter in answer_NO)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
+
+                        PrintDialogue(answer_NO);
                         Console.ReadLine();
-                        foreach (char letter in sentence_NO)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        Console.WriteLine("");
-                        foreach (char letter in sentence_NO2)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
+                        PrintDialogue(sentence_NO);
+                        Console.ReadLine();
+                        PrintDialogue(sentence_NO2);
+
+
                         Thread.Sleep(1000);
                         Console.WriteLine();
                         UserUtilityMethod.removeUser(userName); //run method to remomve user
@@ -1215,122 +1195,89 @@ namespace TheHangMan
 
             static string NewPlayerStoryIntro()
             {
-
                 Console.Clear();
-                Console.WriteLine("--------------------------");
+                Console.WriteLine("------------------");
                 Console.WriteLine("Let's create a new player: ");
                 Console.WriteLine("");
-                Console.Write("Enter your name: ");
-                string? name = Console.ReadLine();
-
+                string? name = "";
                 while (true)
                 {
+                    Console.Write("Enter your name: ");
+                    name = Console.ReadLine();
+                    List<User> allUsersList = UserUtilityMethod.LoadUsers();
 
-                    if (!string.IsNullOrEmpty(name))
+                    if (!allUsersList.Any(w => w.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) && !string.IsNullOrEmpty(name) && name.Length >= 3)
                     {
-                        Thread.Sleep(1000);
-                        Console.WriteLine($"Ok great. Let's begin.");
-                        Thread.Sleep(2000);
-                        Console.BackgroundColor = ConsoleColor.DarkGray;
-                        Console.Clear();
-                        Thread.Sleep(1000);
-
-                        Console.WriteLine("");
-                        Console.WriteLine("   ,,,,,");
-                        Console.WriteLine("  |     |");
-                        Console.WriteLine("  |-O-O-|");
-                        Console.WriteLine(" (|  ^  |)");
-                        Console.WriteLine("  | --- |");
-                        Console.WriteLine("   \\___/");
-                        Console.WriteLine("   |   |");
-                        Console.WriteLine("");
-                        Thread.Sleep(1000);
-
-                        string sentence1 = $"Instructor: 'Hi {name}'";
-                        string sentence2 = $"Instructor: 'Welcome to the Hangman game'";
-                        string sentence3 = $"Instructor: 'As you might know, there is a Hangman in town'";
-                        string sentence4 = $"Instructor: 'And he ain't a nice guy. Last week I played riddles with my life on the line with him'";
-                        string sentence5 = $"Instructor: 'Luckily, the riddle was fairly easy, and here I am. Still alive. Thank God'";
-                        string sentence6 = $"Instructor: 'Well anyway. I want to wish you good luck.'";
-                        string sentence7 = $"Instructor: '...Oh. I almost forgot'";
-                        string sentence8 = $"Instructor: 'You're going to need this...'";
-                        string sentence9 = $"Instructor: 'Ok now. Are you ready?'";
-                        string sentence10 = $"Instructor: 'Off you go then. Good luck now!'";
-
-                        foreach (char letter in sentence1)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        Console.ReadLine();
-                        foreach (char letter in sentence2)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        Console.ReadLine();
-                        foreach (char letter in sentence3)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        Console.ReadLine();
-                        foreach (char letter in sentence4)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        Console.ReadLine();
-                        foreach (char letter in sentence5)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        Console.ReadLine();
-                        foreach (char letter in sentence6)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        Console.ReadLine();
-                        foreach (char letter in sentence7)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        Console.ReadLine();
-                        foreach (char letter in sentence8)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        Console.ReadLine();
-                        Console.WriteLine("");
-                        Console.WriteLine("Instructor has given you 20 USD and 7 Lives");
-
-                        Console.ReadLine();
-                        foreach (char letter in sentence9)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        Console.ReadLine();
-                        foreach (char letter in sentence10)
-                        {
-                            Console.Write(letter);
-                            Thread.Sleep(20);
-                        }
-                        Console.ReadLine();
-                        Console.ResetColor();
-                        return name;
-
+                        break;
                     }
                     else
                     {
-                        Console.WriteLine("Invalid input.");
+                        Console.WriteLine(string.IsNullOrEmpty(name) || name.Length < 3
+                            ? "Your name must be at least three characters."
+                            : "The name already exists. Please choose another name.");
                     }
                 }
 
+
+                Thread.Sleep(1000);
+                Console.WriteLine($"Ok great. Let's begin.");
+                Thread.Sleep(2000);
+                Console.BackgroundColor = ConsoleColor.DarkGray;
+                Console.Clear();
+                Thread.Sleep(1000);
+
+                Console.WriteLine("");
+                Console.WriteLine("   ,,,,,");
+                Console.WriteLine("  |     |");
+                Console.WriteLine("  |-O-O-|");
+                Console.WriteLine(" (|  ^  |)");
+                Console.WriteLine("  | --- |");
+                Console.WriteLine("   \\___/");
+                Console.WriteLine("   |   |");
+                Console.WriteLine("");
+
+                Thread.Sleep(1000);
+
+                string sentence1 = $"Instructor: 'Hi {name}'";
+                string sentence2 = $"Instructor: 'Welcome to the Hangman game'";
+                string sentence3 = $"Instructor: 'As you might know, there is a Hangman in town'";
+                string sentence4 = $"Instructor: 'And he ain't a nice guy. Last week I played riddles with my life on the line with him'";
+                string sentence5 = $"Instructor: 'Luckily, the riddle was fairly easy, and here I am. Still alive. Thank God'";
+                string sentence6 = $"Instructor: 'Well anyway. I want to wish you good luck'";
+                string sentence7 = $"Instructor: '...Oh. I almost forgot'";
+                string sentence8 = $"Instructor: 'You're going to need this...'";
+                string sentence9 = $"Instructor: 'Ok now. Are you ready?'";
+                string sentence10 = $"Instructor: 'Off you go then. Good luck now!'";
+
+
+                PrintDialogue(sentence1);
+                Console.ReadLine();
+                PrintDialogue(sentence2);
+                Console.ReadLine();
+                PrintDialogue(sentence3);
+                Console.ReadLine();
+                PrintDialogue(sentence4);
+                Console.ReadLine();
+                PrintDialogue(sentence5);
+                Console.ReadLine();
+                PrintDialogue(sentence6);
+                Console.ReadLine();
+                PrintDialogue(sentence7);
+                Console.ReadLine();
+                PrintDialogue(sentence8);
+                Console.ReadLine();
+
+                Console.WriteLine("");
+                Console.WriteLine("Instructor has given you 20 USD and 7 Lives");
+                Console.ReadLine();
+
+                PrintDialogue(sentence9);
+                Console.ReadLine();
+                PrintDialogue(sentence10);
+                Console.ReadLine();
+
+                Console.ResetColor();
+                return name;
             }
 
 
