@@ -311,7 +311,7 @@ namespace TheHangMan
                         Console.WriteLine($"CONGRATULATIONS!");
                         Console.WriteLine($"------------------");
                         Console.WriteLine("");
-                        Console.WriteLine($"You won! The correct word was: '{theWord.ToUpper()}'");
+                        Console.WriteLine($"YOU WON! The correct word was: '{theWord.ToUpper()}'");
                         Console.WriteLine("");
                         Console.WriteLine("   |-------------------                           ");
                         Console.WriteLine("   |  /                          ");

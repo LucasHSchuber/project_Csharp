@@ -134,14 +134,14 @@ namespace TheHangMan
                 else if (level == 2) // Medium
                 {
                     filteredWords = filteredWords
-                        .Where(w => w.Word.Contains("z") && !w.Word.Contains("x"))
+                        .Where(w => !w.Word.Contains("z") && !w.Word.Contains("x") && !w.Word.Contains("q"))
                         .Where(w => w.Word.Length > 3 && w.Word.Length <= 7)
                         .ToList();
                 }
                 else if (level == 3) // Hard
                 {
                     filteredWords = filteredWords
-                        .Where(w => w.Word.Length > 7 || (w.Word.Length > 5 && (w.Word.Contains("z") || w.Word.Contains("x") || w.Word.Contains("v") || w.Word.Contains("w"))))
+                        .Where(w => (w.Word.Length > 7) || (w.Word.Length > 4 && (w.Word.Contains("z") || w.Word.Contains("x") || w.Word.Contains("v") || w.Word.Contains("w")) && w.Word.Contains("q")))
                         .ToList();
                 }
                 else

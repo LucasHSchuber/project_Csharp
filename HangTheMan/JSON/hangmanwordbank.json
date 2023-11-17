@@ -162,5 +162,37 @@
     {
         "Word": "bike",
         "Category": "objects"
+    },
+    {
+        "Word": "buenos aires",
+        "Category": "cities"
+    },
+    {
+        "Word": "quito",
+        "Category": "cities"
+    },
+    {
+        "Word": "mexico city",
+        "Category": "cities"
+    },
+    {
+        "Word": "panama city",
+        "Category": "cities"
+    },
+    {
+        "Word": "qatar",
+        "Category": "cities"
+    },
+    {
+        "Word": "bazil",
+        "Category": "cities"
+    },
+    {
+        "Word": "new york",
+        "Category": "cities"
+    },
+    {
+        "Word": "Wienna",
+        "Category": "cities"
     }
 ]

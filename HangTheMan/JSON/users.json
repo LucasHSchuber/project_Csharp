@@ -1,7 +1,12 @@
 [
   {
     "Name": "Lucas",
-    "Money": 10,
-    "Lives": 10
+    "Money": 125,
+    "Lives": 15
+  },
+  {
+    "Name": "Peter",
+    "Money": 28,
+    "Lives": 6
   }
 ]
