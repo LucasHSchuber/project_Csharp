@@ -8,7 +8,6 @@ namespace TheHangMan
         //Drawing the hangman-status
          public static void LivesAsHeart(int amount)
             {
-
                 for (int i = 0; i < amount; i++)
                 {
                     Console.Write("❤ ");

@@ -74,7 +74,6 @@ namespace TheHangMan
             static void PlayHangman(string userName, int userLives, int userMoney)
             {
 
-
                 int Lives = userLives;
                 int Money = userMoney;
 
@@ -458,7 +457,6 @@ namespace TheHangMan
 
 
                     users = UserUtilityMethod.LoadUsers(); // Load the updated list into the global variable
-
                     int index = users.FindIndex(user => user.Name == name);
                     Console.WriteLine("");
                     Console.Write("Press enter to continue ");
@@ -1030,7 +1028,7 @@ namespace TheHangMan
                 string sentence2 = $"Hangman: 'I can see you have neither any money or lives left'";
                 string sentence3 = $"Hangman: 'Well, luckily for you I'm in a good mode today...'";
                 string sentence4 = $"Hangman: 'and I'm willing to offer you a chance to stay a live a little longer'";
-                string sentence5 = $"Hangman: 'Are you interested? Y/N:'";
+                string sentence5 = $"Hangman: 'Are you interested? Y/N: '";
 
                 string answer_NO = $"{userName}: 'No'";
                 string sentence_NO = $"Hangman: 'HAHAHAHAHA well then, good bye {userName}, I'll see you on the other side'";
@@ -1133,7 +1131,7 @@ namespace TheHangMan
                                 guessesLetter.Clear();
 
                                 Console.ResetColor();
-                                Console.Clear();
+                                // Console.Clear();
                                 Environment.Exit(0);
 
                                 // PlayHangman(user.Name, user.Lives, user.Money);
@@ -1186,7 +1184,7 @@ namespace TheHangMan
                     }
                     else
                     {
-                        Console.Write($"Hangman: 'Are you interested? Y/N:'");
+                        Console.Write($"Hangman: 'Are you interested? Y/N: '");
                     }
                 }
 

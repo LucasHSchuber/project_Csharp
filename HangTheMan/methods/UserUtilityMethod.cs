@@ -34,7 +34,6 @@ namespace TheHangMan
         {
             List<User> users = UserUtilityMethod.LoadUsers(); // Load existing users
 
-
             // Find the user with the specified userName
             User userToRemove = users.Find(user => user.Name == userName);
             if (userToRemove != null)

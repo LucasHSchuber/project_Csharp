@@ -7,7 +7,6 @@ namespace TheHangMan
 {
     public static class ViewPlayersMethod
     {
-
         private static List<User> users; // Declare it here
 
         //Drawing the hangman-status
@@ -30,7 +29,7 @@ namespace TheHangMan
                 int Number = 1;
                 foreach (var user in users)
                 {
-                    Console.WriteLine($"[{Number}]. {user.Name} - Money:{user.Money}, Lives:{user.Lives}");
+                    Console.WriteLine($"[{Number}]. {user.Name} - Money: {user.Money}, Lives: {user.Lives}");
                     Number++; //Adding 1 to each message when printing them in console
                 }
             }

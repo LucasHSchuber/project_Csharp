@@ -122,7 +122,6 @@ namespace TheHangMan
                 {
                     filteredWords = filteredWords.Where(w => w.Category.ToLower() == category.ToLower()).ToList();
                 }
-
                 // Apply difficulty
                 if (level == 1) // Easy
                 {
