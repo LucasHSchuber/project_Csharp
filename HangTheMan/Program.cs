@@ -10,7 +10,6 @@ using System.Threading;
 
 using HangTheMan.methods;
 
-
 namespace TheHangMan
 {
     public static class Program
@@ -18,13 +17,12 @@ namespace TheHangMan
 
         public static List<wordBank> words = new List<wordBank>();
         public static List<User> users = new List<User>();
-
         public static List<Riddle> riddles = new List<Riddle>();
-
-        static List<string> guessesLetter = new List<string>(); // Move the list declaration outside the method
+        static List<string> guessesLetter = new List<string>();
         const string FilePathWord = "json/hangmanwordbank.json"; //filename for storing words
         const string FilePathUsers = "json/users.json"; //filename for storing users
         const string FilePathRiddle = "json/riddles.json"; //filename for storing words
+
 
 
         static void Main(string[] args)
@@ -78,7 +76,7 @@ namespace TheHangMan
                 int Money = userMoney;
 
                 List<User> users = UserUtilityMethod.LoadUsers();
-                int check_bought_lives = 0;
+                // int check_bought_lives = 0;
                 if (userLives <= 0 && userMoney > 0)
                 {
                     StartGameWithZeroLives(userName, userLives, userMoney);
@@ -90,7 +88,6 @@ namespace TheHangMan
                 {
                     oneLastChance(userName, userMoney);
                 }
-
 
                 string categoryString;
                 int category;
@@ -117,9 +114,6 @@ namespace TheHangMan
                         break;
                     }
                 }
-
-                // Now, you can use the chosen categoryString in your code.
-
 
                 int level;
                 while (true)
@@ -170,7 +164,7 @@ namespace TheHangMan
 
                 //IF USER HAS MONEY MAKE THEM AVAILABLE TO BET 
                 int bet;
-                if (updUser.Money != null && updUser.Money > 0)
+                if (updUser != null && updUser.Money > 0)
                 {
                     bet = Bets(userName, level);
                 }
@@ -394,6 +388,8 @@ namespace TheHangMan
 
 
             //****METHODS****
+
+            //Displays menu when launching application
             static void DisplayMenu()
             {
 
@@ -411,7 +407,7 @@ namespace TheHangMan
                 Console.WriteLine($"--------------");
             }
 
-
+            //Show game details before a hangman game
             static void GameDetails(string userName, string levelString, string categoryString, int levelPoints, int updUserMoney, int bet)
             {
                 Console.Clear();
@@ -428,8 +424,6 @@ namespace TheHangMan
                 Console.WriteLine($"Bettings: {bet} USD ");
                 Console.WriteLine($"");
             }
-
-
 
 
             //Add a new user when user presses 'N' at start
@@ -470,8 +464,6 @@ namespace TheHangMan
                     Console.WriteLine("Invalid input. Please enter a valid name.");
                 }
             }
-
-
 
 
 
@@ -526,23 +518,18 @@ namespace TheHangMan
 
                 // Directly modify the user's data
                 User selectedUser = users[index];
-                // Update Lives with the lives from the selected user
-                int Lives = selectedUser.Lives;
-                // Update money with the money from the selected user
-                int Money = selectedUser.Money;
-                // Update name with the money from the selected user
-                string Name = selectedUser.Name;
+                int Lives = selectedUser.Lives; // Update Lives with the lives from the selected user
+                int Money = selectedUser.Money;  // Update money with the money from the selected user
+                string Name = selectedUser.Name;  // Update name with the money from the selected user
+                UserUtilityMethod.SaveUsers(users); // Save the changes to the JSON file
 
-                // Save the changes to the JSON file
-                UserUtilityMethod.SaveUsers(users);
-
-
+                //play hangman game 
                 PlayHangman(Name, Lives, Money);
             }
 
 
 
-
+            //if user start a new game with a player that has zero lives
             static void StartGameWithZeroLives(string userName, int userLives, int userMoney)
             {
 
@@ -824,7 +811,7 @@ namespace TheHangMan
             }
 
 
-
+            //show current game status - triggers in some ocantions during the game (e.g when user guesses a already guessed letter or an invalid character)
             static void ShowCurrentGameStatus(string currentState, int Lives)
             {
 
@@ -1187,10 +1174,10 @@ namespace TheHangMan
                         Console.Write($"Hangman: 'Are you interested? Y/N: '");
                     }
                 }
-
             }
 
 
+            //when a user creates a new player - storyline intro
             static string NewPlayerStoryIntro()
             {
                 Console.Clear();
@@ -1215,7 +1202,6 @@ namespace TheHangMan
                             : "The name already exists. Please choose another name.");
                     }
                 }
-
 
                 Thread.Sleep(1000);
                 Console.WriteLine($"Ok great. Let's begin.");

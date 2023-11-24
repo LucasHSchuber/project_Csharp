@@ -7,6 +7,7 @@ namespace TheHangMan
 
     public class Riddle
     {
+        //properties
         public string Question { get; set; }
         public string Answer { get; set; }
 

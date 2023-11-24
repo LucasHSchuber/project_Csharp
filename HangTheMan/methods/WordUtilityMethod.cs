@@ -52,7 +52,7 @@ namespace TheHangMan
                 Console.Write("Type in category name: ");
                 category = Console.ReadLine().ToLower();
 
-                if (category.ToLower() != "animals" && category.ToLower() != "countries" && category.ToLower() != "cities" && category.ToLower() != "objects")
+                if (category != "animals" && category.ToLower() != "countries" && category.ToLower() != "cities" && category.ToLower() != "objects")
                 {
                     Console.WriteLine("Invalid input. Spell out the cateogry name.");
                 }
