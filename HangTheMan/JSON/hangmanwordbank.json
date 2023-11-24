@@ -198,5 +198,21 @@
     {
         "Word": "taiwan",
         "Category": "countries"
+    },
+    {
+        "Word": "bear",
+        "Category": "animals"
+    },
+    {
+        "Word": "mouse",
+        "Category": "animals"
+    },
+    {
+        "Word": "horse",
+        "Category": "animals"
+    },
+    {
+        "Word": "goat",
+        "Category": "animals"
     }
 ]

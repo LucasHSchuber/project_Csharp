@@ -95,8 +95,6 @@ namespace TheHangMan
                     {
                         Console.WriteLine("The word already exists. Please enter a different word.");
                     }
-
-                    break;
                 }
 
                 else
@@ -134,7 +132,7 @@ namespace TheHangMan
                 {
                     filteredWords = filteredWords
                         .Where(w => !w.Word.Contains("z") && !w.Word.Contains("x") && !w.Word.Contains("q"))
-                        .Where(w => w.Word.Length > 3 && w.Word.Length <= 7)
+                        .Where(w => w.Word.Length > 4 && w.Word.Length <= 7)
                         .ToList();
                 }
                 else if (level == 3) // Hard
