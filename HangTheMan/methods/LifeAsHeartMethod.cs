@@ -6,12 +6,14 @@ namespace TheHangMan
     public static class LifeAsHeartMethod
     {
         //Drawing the hangman-status
-         public static void LivesAsHeart(int amount)
+        public static void LivesAsHeart(int amount)
+        {
+            for (int i = 0; i < amount; i++)
             {
-                for (int i = 0; i < amount; i++)
-                {
-                    Console.Write("❤ ");
-                }
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("❤ ");
+                Console.ResetColor();
             }
+        }
     }
 }

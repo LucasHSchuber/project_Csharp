@@ -209,8 +209,11 @@ namespace TheHangMan
 
                 // DISPLAY CURRENT WORD - CURRENT PROGRESS
                 Console.WriteLine($"");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.Write($"WORD:  ");
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write(currentState.ToUpper());
+                Console.ResetColor();
                 Console.WriteLine($"");
                 Console.WriteLine($"");
 
@@ -229,9 +232,9 @@ namespace TheHangMan
 
                     //USER GUESSING
                     Console.Write("Guess a letter: ");
-                    Console.ForegroundColor = ConsoleColor.Yellow; // Set color for the underscore
+                    Console.ForegroundColor = ConsoleColor.Yellow; // Set color for the underscore (user input)
                     Console.Write("_");
-                    Console.ResetColor(); // Reset color to default
+                    Console.ResetColor();
                     string? let1 = Console.ReadLine();
 
                     //if let1 is not null and include a letter
@@ -301,7 +304,9 @@ namespace TheHangMan
                     {
                         Console.Clear();
                         Console.WriteLine($"------------------");
+                        Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"CONGRATULATIONS!");
+                        Console.ResetColor();
                         Console.WriteLine($"------------------");
                         Console.WriteLine("");
                         Console.WriteLine($"YOU WON! The correct word was: '{theWord.ToUpper()}'");
@@ -337,14 +342,17 @@ namespace TheHangMan
                         currentUser_update.Money += levelPoints;
                         UserUtilityMethod.SaveUsers(users);
                         Console.WriteLine($"");
+                        Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine($"Winnings:");
                         Console.WriteLine($"For level {levelString.ToUpper()}: {levelPoints} USD");
                         Console.WriteLine($"Bettings: {bet} USD");
                         Console.WriteLine($"Total winnings: {bet + levelPoints} USD");
                         Console.WriteLine($"");
+                        Console.ForegroundColor = ConsoleColor.Blue;
                         Console.WriteLine($"Player: {currentUser_update.Name}");
                         Console.WriteLine($"Money: {currentUser_update.Money} USD");
                         Console.WriteLine($"Lives: {new_Lives}");
+                        Console.ResetColor();
                         Console.WriteLine($"");
                         Console.WriteLine($"----------------------");
                         Console.Write($"Press enter to return to menu");
@@ -395,7 +403,9 @@ namespace TheHangMan
 
                 Console.Clear();
                 Console.WriteLine($"- - - - - - - - - - - - - - - -");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine($"          Hangman Game         ");
+                Console.ResetColor();
                 Console.WriteLine($"- - - - - - - - - - - - - - - -");
                 Console.WriteLine($"");
                 Console.WriteLine($"[1]. Play Hangman");
@@ -415,13 +425,18 @@ namespace TheHangMan
                 Console.WriteLine("GAME DETAILS");
                 Console.WriteLine($"------------------");
                 Console.WriteLine($"");
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine($"Player: {userName}");
                 Console.WriteLine($"Level: {levelString}");
                 Console.WriteLine($"Category: {categoryString}");
-                Console.WriteLine($"");
-                Console.WriteLine($"Chance to win: {levelPoints} USD");
                 Console.WriteLine($"Current money: {updUserMoney} USD");
+                Console.ResetColor();
+                Console.WriteLine($"");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"Win: {levelPoints} USD");
                 Console.WriteLine($"Bettings: {bet} USD ");
+                Console.WriteLine($"Total chance to win: {bet + levelPoints} USD ");
+                Console.ResetColor();
                 Console.WriteLine($"");
             }
 
@@ -445,9 +460,11 @@ namespace TheHangMan
                     Console.WriteLine("------------------------------------------------");
                     Console.WriteLine($"You have been given {StarMoney} USD and {StartLives} lives to start with. ");
                     Console.WriteLine($"");
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine($"Name: {name}");
                     Console.WriteLine($"Money: {StarMoney} USD");
                     Console.WriteLine($"Lives: {StartLives}");
+                    Console.ResetColor();
 
 
                     users = UserUtilityMethod.LoadUsers(); // Load the updated list into the global variable
@@ -511,9 +528,11 @@ namespace TheHangMan
             {
                 // Console.Clear();
                 Console.WriteLine($"------------------");
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine($"Player: {users[index].Name}");
                 Console.WriteLine($"Money: {users[index].Money} USD");
                 Console.WriteLine($"Lives: {users[index].Lives}");
+                Console.ResetColor();
                 Console.WriteLine($"");
 
                 // Directly modify the user's data
@@ -552,7 +571,7 @@ namespace TheHangMan
                         Console.WriteLine($"------------------");
                         Console.WriteLine($"1 ❤ = 1 USD");
                         Console.WriteLine($"");
-                        Console.WriteLine($"Money: {currentUser.Money} USD");
+                        Console.WriteLine($"Current money: {currentUser.Money} USD");
                         Console.WriteLine($"");
                         Console.Write($"How many lives to you want to purchase? ");
                         string? purchasedLives = Console.ReadLine();
@@ -621,17 +640,23 @@ namespace TheHangMan
                 // Add a line break after printing the guessed words
                 Console.Clear();
                 Console.WriteLine($"------------------");
-                Console.WriteLine($"CORRECT! The letter '{let1.ToUpper()}' is in the word!");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("CORRECT! ");
+                Console.ResetColor();
+                Console.WriteLine($"The letter '{let1.ToUpper()}' is in the word!");
                 Console.WriteLine($"------------------");
                 guessesLetter.Add(let1);
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
 
                 // Console Guessed words
-                Console.WriteLine($"Guessed words:");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine($"GUESSED LETTERS:");
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 foreach (var guess in guessesLetterArray)
                 {
                     Console.Write($"{char.ToUpper(guess)} "); // Convert to capital letters
                 }
+                Console.ResetColor();
                 // Add a line break after printing the guessed words
                 Console.WriteLine();
 
@@ -649,8 +674,11 @@ namespace TheHangMan
 
                 // DISPLAY CURRENT WORD - CURRENT PROGRESS
                 Console.WriteLine($"");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.Write($"WORD:  ");
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write(updatedStateString.ToUpper());
+                Console.ResetColor();
                 Console.WriteLine($"");
                 Console.WriteLine($"");
 
@@ -665,25 +693,34 @@ namespace TheHangMan
             {
                 Console.Clear();
                 Console.WriteLine($"------------------");
-                Console.WriteLine($"WRONG! The letter '{let1.ToUpper()}' is not in the word");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("WRONG! ");
+                Console.ResetColor();
+                Console.WriteLine($"The letter '{let1.ToUpper()}' is not in the word");
                 Console.WriteLine($"------------------");
                 // var guessesLetter = new List<string>();
                 guessesLetter.Add(let1);
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
 
                 // Console Guessd words
-                Console.WriteLine($"Guessed words:");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine($"GUESSED LETTERS:");
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 foreach (var guess in guessesLetterArray)
                 {
                     Console.Write($"{char.ToUpper(guess)} "); // Convert to capital letters
                 }
+                Console.ResetColor();
                 // Add a line break after printing the guessed words
                 Console.WriteLine();
 
                 // DISPLAY CURRENT WORD - CURRENT PROGRESS
                 Console.WriteLine($"");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.Write($"WORD:  ");
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write(currentState.ToUpper());
+                Console.ResetColor();
                 Console.WriteLine($"");
                 Console.WriteLine($"");
 
@@ -731,7 +768,7 @@ namespace TheHangMan
                         Console.WriteLine($"------------------");
                         Console.WriteLine($"1 ❤ = 1 USD");
                         Console.WriteLine($"");
-                        Console.WriteLine($"Money: {currentUser.Money} USD");
+                        Console.WriteLine($"Current money: {currentUser.Money} USD");
                         Console.WriteLine($"");
                         Console.Write($"How many lives to you want to purchase? ");
                         string? purchasedLives = Console.ReadLine();
@@ -743,6 +780,7 @@ namespace TheHangMan
                         }
                         else
                         {
+                            Console.WriteLine($"----");
                             Console.WriteLine($"Are you sure you want to buy {newLives} lives for {newLives} USD? ");
                             Console.WriteLine($"You're new balance will be {currentUser.Money - newLives} USD?");
                             Console.Write($"Y/N: ");
@@ -818,18 +856,24 @@ namespace TheHangMan
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
 
                 // Console Guessd words
-                Console.WriteLine($"Guessed words:");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine($"GUESSED LETTERS:");
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 foreach (var guess in guessesLetterArray)
                 {
                     Console.Write($"{char.ToUpper(guess)} "); // Convert to capital letters
                 }
+                Console.ResetColor();
                 // Add a line break after printing the guessed words
                 Console.WriteLine();
 
                 // DISPLAY CURRENT WORD - CURRENT PROGRESS
                 Console.WriteLine($"");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.Write($"WORD:  ");
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write(currentState.ToUpper());
+                Console.ResetColor();
                 Console.WriteLine($"");
                 Console.WriteLine($"");
                 DrawLivesMethod.DrawLives(Lives);
@@ -849,18 +893,24 @@ namespace TheHangMan
                 char[] guessesLetterArray = guessesLetter.Select(s => s[0]).ToArray();
 
                 // Console Guessd words
-                Console.WriteLine($"Guessed words:");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine($"GUESSED LETTERS:");
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 foreach (var guess in guessesLetterArray)
                 {
                     Console.Write($"{char.ToUpper(guess)} "); // Convert to capital letters
                 }
+                Console.ResetColor();
                 // Add a line break after printing the guessed words
                 Console.WriteLine();
 
                 // DISPLAY CURRENT WORD - CURRENT PROGRESS
                 Console.WriteLine($"");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.Write($"WORD:  ");
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write(currentState.ToUpper());
+                Console.ResetColor();
                 Console.WriteLine($"");
                 Console.WriteLine($"");
 
@@ -880,6 +930,7 @@ namespace TheHangMan
 
                 while (true)
                 {
+                    Console.WriteLine($"----");
                     Console.WriteLine("Do you want to make a bet?");
                     Console.Write($"Y/N: ");
                     string? input = Console.ReadLine();
@@ -1252,7 +1303,10 @@ namespace TheHangMan
                 Console.ReadLine();
 
                 Console.WriteLine("");
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Instructor has given you 20 USD and 7 Lives");
+                Console.ResetColor();
+                Console.BackgroundColor = ConsoleColor.DarkGray;
                 Console.ReadLine();
 
                 PrintDialogue(sentence9);
